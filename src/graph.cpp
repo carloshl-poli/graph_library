@@ -1,35 +1,32 @@
 #include "graph.hpp"
 
-class Graph{
-    private:
-        int edge;
-        bool directed;
-        int size;
+//Construtor
+Graph::Graph(bool directed): edge(0), directed(directed), size(0)
+{
+}
+//Destrutor
+Graph::~Graph()
+{
+}
 
-    public:
-        Graph(bool directed = false): directed(directed){
-        }
+void Graph::setSize(int n){
+    size = n;
+}
 
-        void setSize(int n){
-            this->size = n;
-        }
+void Graph::importEDG(const std::string& path){
+    std::ifstream inputFile(path);
 
-        void importEDG(const std::string& path){
-            std::ifstream inputFile(path);
+    if (!inputFile){
+        std::cerr << "Error! Couldn't open graph " << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    std::cout << "Tentando abrir: " << path << std::endl;
+    std::string line;
+    while (std::getline(inputFile, line)){
+        std::cout << line << std::endl;
+    }
+    std::cout << "Terminou de ler " << path << std::endl;
 
-            if (!inputFile){
-                std::cerr << "Error! Couldn't open graph" << std::endl;
-                exit(EXIT_FAILURE);
-            }
+    inputFile.close();
 
-            std::string line;
-            while (std::getline(inputFile, line)){
-                std::cout << line << std::endl;
-            }
-
-            inputFile.close();
-
-        }
-    
-    
-};
+}

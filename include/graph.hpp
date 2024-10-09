@@ -8,6 +8,19 @@
 
 
 
+class Graph
+{
+private:
+    int edge;
+    bool directed;
+    int size;
+public:
+    Graph(bool directed = false);
+    ~Graph();
+    void setSize(int n);
+    void importEDG(const std::string& path);
+};
+
 
 
 
