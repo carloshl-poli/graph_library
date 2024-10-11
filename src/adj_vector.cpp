@@ -1,5 +1,53 @@
 #include "adj_vector.hpp"
 
+
+
+AdjVector::AdjVector(const std::string &path, bool isDirected) {
+    std::string line;
+    std::ifstream graphFile(path);
+    this->edgeAmount = 0;
+    this->vertexAmount = 0;
+
+    if (!graphFile){
+        std::cerr << "Error! Couldn't open graph" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    //Set vertex Amount to the first line
+    if (getline(graphFile, line)){
+        this->vertexAmount = std::stoi(line);
+    }
+
+    this->resize(this->vertexAmount);
+
+
+    while (getline(graphFile, line)){
+        std::istringstream iss(line);
+        int u, v, U, V;
+        double weight;
+
+        if (iss >> U >> V){
+            u = U - 1;
+            v = V - 1;
+
+            if (u < 0 || v < 0 || u >= this->vertexAmount || v >= this->vertexAmount) {
+                std::cerr << "Error! índex out of bounds: " << U << ", " << V << std::endl;
+                exit(EXIT_FAILURE);
+            }
+
+            if (!(iss >> weight)){
+                weight = 1.0;
+            } 
+            this->insertEdge(u,V, weight);
+            this->edgeAmount++;
+            if (!isDirected){
+                this->insertEdge(v,U, weight);
+            }
+        }
+
+    }
+    
+}
+
 void AdjVector::insertEdge(int u, int V, double weight) {
     this->body[u].emplace_back(V, weight);
 }
@@ -41,8 +89,18 @@ void AdjVector::setWeightUV(int U, int V, double newWeight){
     this->body[U-1][v].second = newWeight;
 }
 
-/// @todo implement this 
-void AdjVector::printGraph(){
-
+void AdjVector::printGraph() {
+    std::cout << "Edge list (u -> v):\n";
+    for (int u = 0; u < this->body.size(); u++) {
+        for (const auto& edge : this->body[u]) {
+            int v = edge.first;
+            double weight = edge.second;
+            std::cout << (u + 1) << " -> " << v << " [weight: " << weight << "]\n";
+        }
+    }
 }
 
+
+AdjVector::~AdjVector()
+{
+}

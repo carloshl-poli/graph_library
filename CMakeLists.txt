@@ -20,8 +20,12 @@ elseif (UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 endif()
 
+# Use file(GLOB ...) to get all .cpp files in the source directory
+file(GLOB SOURCES "src/*.cpp")  # Correção aqui
+
 # Adicionar os arquivos de origem ao projeto
-add_executable(graph_project src/main.cpp src/graph.cpp)
+# add_executable(graph_project src/main.cpp src/graph.cpp)
+add_executable(graph_project ${SOURCES})
 
 # Linking com bibliotecas adicionais se necessário (Windows, por exemplo)
 if (WIN32)
