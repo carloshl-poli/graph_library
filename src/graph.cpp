@@ -20,6 +20,3 @@ Graph::Graph(std::string &path, GraphStructure structure, bool isDirected){
 
 }
 
-void Graph::setStructure(GraphStructure structure){
-    
-}

@@ -16,7 +16,7 @@ class AdjMatrix : public Structure
 private:
     std::vector<std::vector<std::optional<double>>> body;
 public:
-    AdjMatrix(const std::string &path, bool isDirected = false): Structure(path, isDirected){}
+    AdjMatrix(const std::string &path, bool isDirected = false);
     ~AdjMatrix ();
 
     void resize(int size) override;
@@ -24,6 +24,7 @@ public:
     bool hasEdgeUV(int U, int V) override;
     std::optional<double> getWeightUV(int U, int V) override;
     ReturnType getUAdjArray(int U, bool getWeight = false);
+    void printGraph() override;
 
 };
 

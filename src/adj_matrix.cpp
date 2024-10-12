@@ -1,7 +1,7 @@
 #include "adj_matrix.hpp"
 
-/// @deprecated Now using Parent's constructor
-AdjMatrix::AdjMatrix (const std::string &path, bool isDirected) {
+
+AdjMatrix::AdjMatrix(const std::string &path, bool isDirected) {
     std::string line;
     std::ifstream graphFile(path);
     this->edgeAmount = 0;
@@ -11,13 +11,14 @@ AdjMatrix::AdjMatrix (const std::string &path, bool isDirected) {
         std::cerr << "Error! Couldn't open graph" << std::endl;
         exit(EXIT_FAILURE);
     }
-
     //Set vertex Amount to the first line
     if (getline(graphFile, line)){
         this->vertexAmount = std::stoi(line);
     }
 
     this->resize(this->vertexAmount);
+    this->degreeVec.resize(this->vertexAmount, 0);
+    this->weightVec.resize(this->vertexAmount, 0);
 
     while (getline(graphFile, line)){
         std::istringstream iss(line);
@@ -38,13 +39,28 @@ AdjMatrix::AdjMatrix (const std::string &path, bool isDirected) {
             } 
             this->insertEdge(u,v, weight);
             this->edgeAmount++;
+            this->degreeVec[u]++;
+            this->weightVec[u]++;
             if (!isDirected){
                 this->insertEdge(v,u, weight);
+                this->degreeVec[v]++;
+                this->weightVec[v]++;
             }
         }
 
     }
-    
+    ///TODO: LIMPAR ESSE LIXO
+    graphFile.clear();
+    graphFile.seekg(0);
+    getline(graphFile, line);
+    getline(graphFile, line);
+    std::istringstream iss(line);
+    int a, b;
+    double c;
+    if (iss >> a >> b >> c){
+        this->hasWeight = true;
+    }
+    graphFile.close();
 }
 
 void AdjMatrix::insertEdge(int u, int v, double w){
@@ -68,6 +84,7 @@ std::optional<double> AdjMatrix::getWeightUV(int U, int V){
 }
 
 /// @todo Reescrever para eliminar repetição de código
+/// @todo Verificar se há erros
 ReturnType AdjMatrix::getUAdjArray(int U, bool getWeight){
     if (getWeight){
         std::vector<std::pair<int, std::optional<double>>> adjArray;
@@ -78,6 +95,7 @@ ReturnType AdjMatrix::getUAdjArray(int U, bool getWeight){
                 adjArray.push_back(std::make_pair(V, this->getWeightUV(U, V)));
             }
         }
+        return adjArray;
     }
     else {
         std::vector<int> adjArray;
@@ -86,6 +104,22 @@ ReturnType AdjMatrix::getUAdjArray(int U, bool getWeight){
             int u = U - 1;
             if (this->body[u][v].has_value()){
                 adjArray.push_back(V);
+            }
+        }
+        return adjArray;
+    }
+    
+}
+
+void AdjMatrix::printGraph() {
+    std::cout << "Edge list (u -> v):\n";
+    for (int u = 0; u < this->body.size(); u++) {
+        for (int v = 0; v < this->body.size(); v++) {
+            if (this->body[u][v].has_value()){
+                int U = u + 1;
+                int V = v + 1;
+                std::optional<double> weight = this->body[u][v];
+                std::cout << U << " -> " << V << " [weight: " << weight.value() << "]\n";
             }
         }
     }

@@ -57,6 +57,13 @@ public:
     //Graph Basic Algorithm
     std::unordered_map<int, std::pair<int, int>>  getUBFSTree(int U);
     std::unordered_map<int, std::pair<int, int>>  getUDFSTree(int U);
+    std::unordered_map<int, std::pair<int, int>>  getDijkstraTree(int U);
+    std::unordered_map<int, std::pair<int, int>>  getPrimmMST(int U);
+    std::unordered_map<int, std::pair<int, int>>  getKruskalMST(int U);
+
+    std::unordered_map<int, std::pair<int, int>>  getBellmanFordTree(int U);
+    std::unordered_map<int, std::pair<int, int>>  getFloydWarshallTree(int U);
+
 
 
     //Graph Basic Measure Methods

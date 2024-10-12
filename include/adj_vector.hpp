@@ -16,7 +16,7 @@ class AdjVector : public Structure
 private:
     std::vector<std::vector<std::pair<int, double>>> body;
 public:
-    AdjVector(const std::string &path, bool isDirected = false): Structure(path, isDirected){}
+    AdjVector(const std::string &path, bool isDirected = false);
     ~AdjVector();
     int getEdgeUV(int U, int V);
     void setWeightUV(int U, int V, double newWeight);

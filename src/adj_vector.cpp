@@ -1,7 +1,5 @@
 #include "adj_vector.hpp"
 
-
-/// @deprecated Now using Parent's constructor
 AdjVector::AdjVector(const std::string &path, bool isDirected) {
     std::string line;
     std::ifstream graphFile(path);
@@ -18,7 +16,8 @@ AdjVector::AdjVector(const std::string &path, bool isDirected) {
     }
 
     this->resize(this->vertexAmount);
-
+    this->degreeVec.resize(this->vertexAmount, 0);
+    this->weightVec.resize(this->vertexAmount, 0);
 
     while (getline(graphFile, line)){
         std::istringstream iss(line);
@@ -39,13 +38,17 @@ AdjVector::AdjVector(const std::string &path, bool isDirected) {
             } 
             this->insertEdge(u,V, weight);
             this->edgeAmount++;
+            this->degreeVec[u]++;
+            this->weightVec[u]++;
             if (!isDirected){
                 this->insertEdge(v,U, weight);
+                this->degreeVec[v]++;
+                this->weightVec[v]++;
             }
         }
 
     }
-    ///TODO LIMPAR ESSE LIXO
+    ///TODO: LIMPAR ESSE LIXO
     graphFile.clear();
     graphFile.seekg(0);
     getline(graphFile, line);
@@ -113,8 +116,13 @@ void AdjVector::printGraph() {
 }
 
 ReturnType AdjVector::getUAdjArray(int U, bool getWeight){
-    if (getWeight){
-        return this->body[U - 1];
+    if (getWeight) {
+        // Converter para o formato necessário com std::optional<double>
+        std::vector<std::pair<int, std::optional<double>>> weightedArray;
+        for (const auto& pair : this->body[U - 1]) {
+            weightedArray.push_back({pair.first, pair.second});  // Envolva o segundo valor com std::optional
+        }
+        return weightedArray;  // Retorna o vector de pares com std::optional<double>
     }
     std::vector<int> intArray;
     for (int i = 0; i < this->body[U - 1].size(); i++){

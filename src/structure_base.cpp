@@ -8,6 +8,8 @@ int Structure::getVertexAmount(){
     return edgeAmount;
 }
 
+
+/*
 Structure::Structure(const std::string &path, bool isDirected) {
     std::string line;
     std::ifstream graphFile(path);
@@ -69,7 +71,7 @@ Structure::Structure(const std::string &path, bool isDirected) {
     }
     graphFile.close();
 }
-
+*/
 
 int Structure::getUDegree(int U){
     return this->degreeVec[U - 1];

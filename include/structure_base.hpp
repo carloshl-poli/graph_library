@@ -10,10 +10,10 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
-
+#include <optional>
 
 using IntVec = std::vector<int>;
-using PairVec = std::vector<std::pair<int, double>>;
+using PairVec = std::vector<std::pair<int, std::optional<double>>>;
 using ReturnType = std::variant<IntVec, PairVec>;
 
 class Structure {
@@ -26,8 +26,8 @@ protected:
 public:
     bool hasWeight;
 
-    Structure::Structure() = default;
-    Structure::Structure(const std::string &path, bool isDirected);
+    //Structure::Structure();
+    //Structure(const std::string &path, bool isDirected);
 
     virtual ~Structure() = default;
     virtual bool hasEdgeUV(int V, int U) = 0;
