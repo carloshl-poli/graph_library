@@ -1,14 +1,14 @@
 #include "adj_vector.hpp"
 
 
-
+/// @deprecated Now using Parent's constructor
 AdjVector::AdjVector(const std::string &path, bool isDirected) {
     std::string line;
     std::ifstream graphFile(path);
     this->edgeAmount = 0;
     this->vertexAmount = 0;
 
-    if (!graphFile){
+    if (!graphFile.is_open()){
         std::cerr << "Error! Couldn't open graph" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -45,7 +45,18 @@ AdjVector::AdjVector(const std::string &path, bool isDirected) {
         }
 
     }
-    
+    ///TODO LIMPAR ESSE LIXO
+    graphFile.clear();
+    graphFile.seekg(0);
+    getline(graphFile, line);
+    getline(graphFile, line);
+    std::istringstream iss(line);
+    int a, b;
+    double c;
+    if (iss >> a >> b >> c){
+        this->hasWeight = true;
+    }
+    graphFile.close();
 }
 
 void AdjVector::insertEdge(int u, int V, double weight) {
@@ -62,7 +73,8 @@ int AdjVector::getEdgeUV(int U, int V){
             return index;
         }
     }
-    throw std::out_of_range("Edge UV not inside graph");
+    throw std::out_of_range("Error: There is no edge between vertices "
+        + std::to_string(V) + " and " + std::to_string(U) + ".");
 }
 
 bool AdjVector::hasEdgeUV(int U, int V){
@@ -79,7 +91,7 @@ bool AdjVector::hasEdgeUV(int U, int V){
 }
     
 
-double AdjVector::getWeightUV(int U, int V){
+std::optional<double> AdjVector::getWeightUV(int U, int V){
     int v = this->getEdgeUV(U,V);
     return this->body[U-1][v].second;
 }
@@ -98,6 +110,17 @@ void AdjVector::printGraph() {
             std::cout << (u + 1) << " -> " << v << " [weight: " << weight << "]\n";
         }
     }
+}
+
+ReturnType AdjVector::getUAdjArray(int U, bool getWeight){
+    if (getWeight){
+        return this->body[U - 1];
+    }
+    std::vector<int> intArray;
+    for (int i = 0; i < this->body[U - 1].size(); i++){
+        intArray.push_back(this->body[U - 1][i].first);
+    }
+    return intArray;
 }
 
 

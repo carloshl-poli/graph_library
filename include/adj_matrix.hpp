@@ -2,24 +2,32 @@
 #define ADJ_MATRIX_HPP
 
 #include "structure_base.hpp"
-
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <utility>
+#include <stdexcept>
+#include <optional>
 
 class AdjMatrix : public Structure
 {
 private:
-    /* data */
+    std::vector<std::vector<std::optional<double>>> body;
 public:
-    AdjMatrix (/* args */);
+    AdjMatrix(const std::string &path, bool isDirected = false): Structure(path, isDirected){}
     ~AdjMatrix ();
+
+    void resize(int size) override;
+    void insertEdge(int u,int V,double w) override;
+    bool hasEdgeUV(int U, int V) override;
+    std::optional<double> getWeightUV(int U, int V) override;
+    ReturnType getUAdjArray(int U, bool getWeight = false);
+
 };
 
-AdjMatrix::AdjMatrix (/* args */)
-{
-}
 
-AdjMatrix::~AdjMatrix()
-{
-}
 
 
 

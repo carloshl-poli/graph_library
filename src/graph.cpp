@@ -1,32 +1,25 @@
 #include "graph.hpp"
 
 //Construtor
-Graph::Graph(bool directed): edge(0), directed(directed), size(0)
-{
-}
-//Destrutor
-Graph::~Graph()
-{
-}
-
-void Graph::setSize(int n){
-    size = n;
-}
-
-void Graph::importEDG(const std::string& path){
-    std::ifstream inputFile(path);
-
-    if (!inputFile){
-        std::cerr << "Error! Couldn't open graph " << std::endl;
-        exit(EXIT_FAILURE);
+Graph::Graph(std::string &path, GraphStructure structure, bool isDirected){
+    switch (structure) {
+        case GraphStructure::AdjMatrix:
+            this->structure = std::make_unique<AdjMatrix>(path, isDirected);
+            break;
+        case GraphStructure::AdjVector:
+            this->structure = std::make_unique<AdjVector>(path, isDirected);
+            break;
+        default:
+            throw std::out_of_range("Error: Invalid or not supported Structure");
+            break;
     }
-    std::cout << "Tentando abrir: " << path << std::endl;
-    std::string line;
-    while (std::getline(inputFile, line)){
-        std::cout << line << std::endl;
-    }
-    std::cout << "Terminou de ler " << path << std::endl;
 
-    inputFile.close();
+    this->vertexAmount = this->structure->getVertexAmount();
+    this->edgeAmount = this->structure->getEdgeAmount();
+    this->hasWeight = this->structure->hasWeight;
 
+}
+
+void Graph::setStructure(GraphStructure structure){
+    
 }

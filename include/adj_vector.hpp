@@ -9,13 +9,14 @@
 #include <sstream>
 #include <utility>
 #include <stdexcept>
+#include <optional>
 
 class AdjVector : public Structure
 {
 private:
     std::vector<std::vector<std::pair<int, double>>> body;
 public:
-    AdjVector(const std::string &path, bool isDirected = false);
+    AdjVector(const std::string &path, bool isDirected = false): Structure(path, isDirected){}
     ~AdjVector();
     int getEdgeUV(int U, int V);
     void setWeightUV(int U, int V, double newWeight);
@@ -24,7 +25,8 @@ public:
     void resize(int size) override;
     void insertEdge(int u,int V,double w) override;
     bool hasEdgeUV(int U, int V) override;
-    double getWeightUV(int U, int V) override;
+    std::optional<double> getWeightUV(int U, int V) override;
+    ReturnType getUAdjArray(int U, bool getWeight = false);
 
     
 };
