@@ -26,6 +26,9 @@ public:
     ReturnType getUAdjArray(int U, bool getWeight = false);
     void printGraph() override;
 
+    std::vector<int> getAdjArray(int U);
+    std::vector<std::pair<int, double>> getAdjWeightedArray(int U);
+
 };
 
 

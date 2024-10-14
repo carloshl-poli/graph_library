@@ -40,11 +40,12 @@ AdjMatrix::AdjMatrix(const std::string &path, bool isDirected) {
             this->insertEdge(u,v, weight);
             this->edgeAmount++;
             this->degreeVec[u]++;
-            this->weightVec[u]++;
+            this->updateWeight(u, weight);
+            
             if (!isDirected){
                 this->insertEdge(v,u, weight);
                 this->degreeVec[v]++;
-                this->weightVec[v]++;
+                this->updateWeight(v, weight);
             }
         }
 
@@ -63,8 +64,8 @@ AdjMatrix::AdjMatrix(const std::string &path, bool isDirected) {
     graphFile.close();
 }
 
-void AdjMatrix::insertEdge(int u, int v, double w){
-    this->body[u][v] = w;
+void AdjMatrix::insertEdge(int U, int V, double w){
+    this->body[U-1][V-1] = w;
 }
 
 void AdjMatrix::resize(int n){
@@ -83,8 +84,8 @@ std::optional<double> AdjMatrix::getWeightUV(int U, int V){
         + std::to_string(V) + " and " + std::to_string(U) + ".");
 }
 
-/// @todo Reescrever para eliminar repetição de código
-/// @todo Verificar se há erros
+/// @deprecated
+/// @todo Verificar possível remoção do método
 ReturnType AdjMatrix::getUAdjArray(int U, bool getWeight){
     if (getWeight){
         std::vector<std::pair<int, std::optional<double>>> adjArray;
@@ -108,6 +109,7 @@ ReturnType AdjMatrix::getUAdjArray(int U, bool getWeight){
         }
         return adjArray;
     }
+
     
 }
 
@@ -123,6 +125,31 @@ void AdjMatrix::printGraph() {
             }
         }
     }
+}
+
+std::vector<int> AdjMatrix::getAdjArray(int U) {
+    std::vector<int> adjArray;
+    int u = U - 1;
+    for (int v = 0; v < this->vertexAmount; v++){
+        int V = v + 1;
+        if (this->body[u][v].has_value()){
+            adjArray.push_back(V);
+        }
+    }
+    return adjArray;
+}
+
+std::vector<std::pair<int, double>> AdjMatrix::getAdjWeightedArray(int U) {
+    std::vector<std::pair<int, double>> adjWeightedArray;
+    int u = U - 1;
+    for (int v = 0; v < this->vertexAmount; v++){
+        int V = v + 1;
+        if (this->body[u][v].has_value()){
+            adjWeightedArray.push_back(std::pair<int, double>(V, this->body[u][v].value()));
+        }
+    }
+
+    return adjWeightedArray;
 }
 
 AdjMatrix::~AdjMatrix()

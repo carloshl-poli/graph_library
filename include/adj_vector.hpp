@@ -27,6 +27,8 @@ public:
     bool hasEdgeUV(int U, int V) override;
     std::optional<double> getWeightUV(int U, int V) override;
     ReturnType getUAdjArray(int U, bool getWeight = false);
+    std::vector<int> getAdjArray(int U) override;
+    std::vector<std::pair<int, double>> getAdjWeightedArray(int U) override;
 
     
 };

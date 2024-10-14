@@ -14,6 +14,8 @@
 #include <variant>
 #include <optional>
 #include <queue>
+#include <algorithm>
+#include <numeric>
 
 using VertexDataVec = std::variant<std::unordered_map<int, std::pair<int, int>>,
                       std::deque<int>>;
@@ -28,6 +30,15 @@ struct VertexTempData {
     int vertex;
     int parent;
     int level;
+};
+
+struct Data{
+    int level;
+    int parent;
+
+    Data(int level, int parent) : parent(parent), level(level) {}
+
+    friend class Graph;
 };
 
 class Graph {
@@ -46,8 +57,8 @@ public:
     //Graph Basic Data Methods
     double getMean(bool weighted = false);
     double getMedian(bool weighted = false);
-    double getMinDegree(bool weighted = false);
-    double getMaxDegree(bool weighted = false);
+    std::optional<double> getMinDegree(bool weighted = false);
+    std::optional<double> getMaxDegree(bool weighted = false);
 
     //Graph Export Methods
     void graphExportAsEDG(std::string &path);
@@ -55,11 +66,11 @@ public:
     void subCompExportAsStream(std::string &path);
 
     //Graph Basic Algorithm
-    std::unordered_map<int, std::pair<int, int>>  getUBFSTree(int U);
-    std::unordered_map<int, std::pair<int, int>>  getUDFSTree(int U);
-    std::unordered_map<int, std::pair<int, int>>  getDijkstraTree(int U);
-    std::unordered_map<int, std::pair<int, int>>  getPrimmMST(int U);
-    std::unordered_map<int, std::pair<int, int>>  getKruskalMST(int U);
+    std::unordered_map<int, Data>  getBFSTree(int U);
+    std::unordered_map<int, std::pair<int, int>>  getDFSTree(int U);
+    std::unordered_map<int, std::pair<int, int>>  getDijkstraTree(int U, bool useHeap = true);
+    std::unordered_map<int, std::pair<int, int>>  getPrimmMST();
+    std::unordered_map<int, std::pair<int, int>>  getKruskalMST();
 
     std::unordered_map<int, std::pair<int, int>>  getBellmanFordTree(int U);
     std::unordered_map<int, std::pair<int, int>>  getFloydWarshallTree(int U);
@@ -67,8 +78,8 @@ public:
 
 
     //Graph Basic Measure Methods
-    std::optional<double> getUVDistance(int U, int V);
-    double getGraphDiameter(bool getAccurate = true);
+    int getUVDistance(int U, int V);
+    int getGraphDiameter(bool getAccurate = true);
 
 
     //Graph Utility Methods

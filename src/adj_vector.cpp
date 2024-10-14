@@ -1,5 +1,7 @@
 #include "adj_vector.hpp"
 
+
+
 AdjVector::AdjVector(const std::string &path, bool isDirected) {
     std::string line;
     std::ifstream graphFile(path);
@@ -29,8 +31,7 @@ AdjVector::AdjVector(const std::string &path, bool isDirected) {
             v = V - 1;
 
             if (u < 0 || v < 0 || u >= this->vertexAmount || v >= this->vertexAmount) {
-                std::cerr << "Error! índex out of bounds: " << U << ", " << V << std::endl;
-                exit(EXIT_FAILURE);
+                throw std::out_of_range("Error! índex out of bounds");
             }
 
             if (!(iss >> weight)){
@@ -39,11 +40,11 @@ AdjVector::AdjVector(const std::string &path, bool isDirected) {
             this->insertEdge(u,V, weight);
             this->edgeAmount++;
             this->degreeVec[u]++;
-            this->weightVec[u]++;
+            this->updateWeight(u, weight);
             if (!isDirected){
                 this->insertEdge(v,U, weight);
                 this->degreeVec[v]++;
-                this->weightVec[v]++;
+                this->updateWeight(v, weight);
             }
         }
 
@@ -62,8 +63,8 @@ AdjVector::AdjVector(const std::string &path, bool isDirected) {
     graphFile.close();
 }
 
-void AdjVector::insertEdge(int u, int V, double weight) {
-    this->body[u].emplace_back(V, weight);
+void AdjVector::insertEdge(int U, int V, double weight) {
+    this->body[U-1].emplace_back(V, weight);
 }
 
 void AdjVector::resize(int size){
@@ -115,6 +116,7 @@ void AdjVector::printGraph() {
     }
 }
 
+/// @deprecated
 ReturnType AdjVector::getUAdjArray(int U, bool getWeight){
     if (getWeight) {
         // Converter para o formato necessário com std::optional<double>
@@ -131,6 +133,23 @@ ReturnType AdjVector::getUAdjArray(int U, bool getWeight){
     return intArray;
 }
 
+std::vector<int> AdjVector::getAdjArray(int U) {
+    int u = U - 1;
+    std::vector<int> intArray;
+    for (int v = 0; v < this->body[u].size(); v++){
+        intArray.push_back(this->body[u][v].first);
+    }
+    return intArray;
+}
+
+std::vector<std::pair<int, double>> AdjVector::getAdjWeightedArray(int U) {
+    int u = U - 1;
+    std::vector<std::pair<int, std::optional<double>>> weightedArray;
+    for (const auto& pair : this->body[u]) {
+            weightedArray.push_back({pair.first, pair.second});
+    }
+    return this->body[u];
+}
 
 AdjVector::~AdjVector()
 {

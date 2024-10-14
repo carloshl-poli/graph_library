@@ -77,7 +77,87 @@ int Structure::getUDegree(int U){
     return this->degreeVec[U - 1];
 }
 
-double Structure::getUWeight(int U){
+void Structure::updateWeight(std::size_t u, double weight) {
+    if (weightVec[u].has_value()) {
+        weightVec[u] = weightVec[u].value() + weight;
+    } else {
+        weightVec[u] = weight;
+    }
+}
+
+std::optional<double> Structure::getUWeight(int U){
     return this->weightVec[U - 1];
 }
 
+std::vector<int> Structure::getDegreeVec(){
+    return this->degreeVec;
+}
+
+std::vector<std::optional<double>> Structure::getWeightVec(){
+    return this->weightVec;
+}
+
+std::vector<std::optional<double>> Structure::getWeightedDegreeVec() {
+    std::vector<int> degreeVec = this->getDegreeVec();
+    std::vector<std::optional<double>> weightVec = this->getWeightVec();
+    std::vector<std::optional<double>> weightedVec(degreeVec.size());
+    for (size_t i = 0; i < degreeVec.size(); i++){
+        if (weightVec[i]){
+            weightedVec[i] = *weightVec[i] * degreeVec[i];
+        }
+        
+    }
+    return weightedVec;
+}
+
+void Structure::helper_init(std::string line, bool isDirected) {
+    std::istringstream iss(line);
+    int U, V;
+    if (iss >> U >> V){
+        if (U < 1 || V < 1 || U > this->vertexAmount || V > this->vertexAmount) {
+            throw std::out_of_range("Error! índex out of bounds");
+        }
+        this->insertEdge(U,V);
+        this->edgeAmount++;
+        this->data[U].degree++;
+        if (!isDirected){
+            this->insertEdge(V,U);
+            this->data[U].degree++;
+        }
+    }
+    else {
+        throw std::invalid_argument("line must be 'int int'");
+    }
+}
+
+void Structure::initStruct(const std::string &path, bool isDirected, bool isWeighted)
+{
+    std::string line;
+    std::ifstream graphFile(path);
+    this->edgeAmount = 0;
+    this->vertexAmount = 0;
+
+    if (!graphFile.is_open()){
+        throw std::runtime_error("Error! Couldn't open graph file");
+    }
+
+    //Set vertex Amount to the first line
+    if (getline(graphFile, line)){
+        this->vertexAmount = std::stoi(line);
+    }
+    else {
+        throw std::invalid_argument("invalid graph size, must be a single integer");
+    }
+
+    this->resize(this->vertexAmount);
+
+    while (getline(graphFile, line)){
+        if (isWeighted){
+            this->helper_init(line, isDirected);
+        }
+        else {
+            this->helper_initWeighted(line, isDirected);
+        }
+    }
+    graphFile.close();
+}
