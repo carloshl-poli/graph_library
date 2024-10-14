@@ -16,6 +16,7 @@
 #include <queue>
 #include <algorithm>
 #include <numeric>
+#include <cmath>
 
 using VertexDataVec = std::variant<std::unordered_map<int, std::pair<int, int>>,
                       std::deque<int>>;
@@ -32,15 +33,6 @@ struct VertexTempData {
     int level;
 };
 
-struct Data{
-    int level;
-    int parent;
-
-    Data(int level, int parent) : parent(parent), level(level) {}
-
-    friend class Graph;
-};
-
 class Graph {
 protected:
     int vertexAmount;
@@ -49,16 +41,27 @@ protected:
     std::unique_ptr<Structure> structure;
     int edgeAmount;
 
+    struct Data{
+        int level;
+        int parent;
+
+        Data(int level, int parent) : parent(parent), level(level) {}
+
+        friend class Graph;
+    };
+
 public:
+    using ReturnGraphDataMap = std::unordered_map<int, Graph::Data>;
+
     Graph(): vertexAmount(0), directed(false), hasWeight(false){}
     Graph(std::string &path, GraphStructure structure, bool isDirected = false);
     ~Graph() = default;
 
     //Graph Basic Data Methods
-    double getMean(bool weighted = false);
-    double getMedian(bool weighted = false);
-    std::optional<double> getMinDegree(bool weighted = false);
-    std::optional<double> getMaxDegree(bool weighted = false);
+    double getMean();
+    double getMedian();
+    int getMinDegree();
+    int getMaxDegree();
 
     //Graph Export Methods
     void graphExportAsEDG(std::string &path);
@@ -66,20 +69,21 @@ public:
     void subCompExportAsStream(std::string &path);
 
     //Graph Basic Algorithm
-    std::unordered_map<int, Data>  getBFSTree(int U);
-    std::unordered_map<int, std::pair<int, int>>  getDFSTree(int U);
-    std::unordered_map<int, std::pair<int, int>>  getDijkstraTree(int U, bool useHeap = true);
-    std::unordered_map<int, std::pair<int, int>>  getPrimmMST();
-    std::unordered_map<int, std::pair<int, int>>  getKruskalMST();
+    ReturnGraphDataMap getBFSTree(int U);
+    ReturnGraphDataMap  getDFSTree(int U);
+    ReturnGraphDataMap  getDijkstraTree(int U, bool useHeap = true);
+    ReturnGraphDataMap  getPrimmMST();
+    ReturnGraphDataMap  getKruskalMST();
 
-    std::unordered_map<int, std::pair<int, int>>  getBellmanFordTree(int U);
-    std::unordered_map<int, std::pair<int, int>>  getFloydWarshallTree(int U);
+    ReturnGraphDataMap  getBellmanFordTree(int U);
+    ReturnGraphDataMap  getFloydWarshallTree(int U);
 
 
 
     //Graph Basic Measure Methods
-    int getUVDistance(int U, int V);
-    int getGraphDiameter(bool getAccurate = true);
+    std::optional<int> getUVDistance(int U, int V);
+    int getApproxDiameter();
+    int getExactDiameter();
 
 
     //Graph Utility Methods

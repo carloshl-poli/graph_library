@@ -161,3 +161,8 @@ void Structure::initStruct(const std::string &path, bool isDirected, bool isWeig
     }
     graphFile.close();
 }
+
+std::unordered_map<int, Structure::Data> Structure::getDataArray()
+{
+    return this->data;
+}

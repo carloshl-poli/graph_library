@@ -20,15 +20,6 @@ using ReturnType = std::variant<IntVec, PairVec>;
 
 class AdjMatrix;
 class AdjVector;
-struct Data {
-    int degree = 0;
-    //std::optional<double> weight;
-
-    Data() {}
-    friend class Structure;
-    friend class AdjMatrix;
-    friend class AdjVector;
-};
 
 class Structure {
 
@@ -37,6 +28,16 @@ private:
     void helper_initWeighted(std::string line, bool isDirected);
 
 protected:
+
+    struct Data {
+        int degree = 0;
+
+        Data() {}
+        friend class Structure;
+        friend class AdjMatrix;
+        friend class AdjVector;
+    };
+    
     int vertexAmount;
     int edgeAmount;
     std::vector<int> degreeVec;
@@ -46,6 +47,7 @@ protected:
     
 public:
     bool hasWeight;
+    std::unordered_map<int, Data> getDataArray();
 
     //Structure::Structure();
     //Structure(const std::string &path, bool isDirected, bool isWeighted);
