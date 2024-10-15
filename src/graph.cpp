@@ -1,8 +1,5 @@
 #include "graph.hpp"
 
-
-
-
 // Construtor
 Graph::Graph(std::string &path, GraphStructure structure, bool isDirected){
     switch (structure) {
@@ -74,7 +71,39 @@ int Graph::getMaxDegree(){
     }    
     return maxDegree;
 }
-/// @note Ready for tests 
+void Graph::printSubGraphsToFile(const ReturnSubGraphHeap &subGraphHeap, const std::string &filename) {
+    std::string filePath = OUTPUT_PATH + filename;
+    std::ofstream outputFile(filePath);  // Abrir o arquivo
+
+    if (!outputFile.is_open()) {  // Verificar se o arquivo foi aberto corretamente
+        std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+        return;
+    }
+
+    ReturnSubGraphHeap heapCopy = subGraphHeap;  // Criar uma cópia do heap, pois priority_queue é destrutiva
+
+    // Percorrer o heap e imprimir cada subgrafo
+    while (!heapCopy.empty()) {
+        auto currentSubGraph = heapCopy.top();  // Obter o subgrafo no topo (maior)
+        heapCopy.pop();  // Remover o subgrafo do heap
+
+        // Escrever o tamanho do subgrafo
+        outputFile << "Subgrafo de tamanho: " << currentSubGraph.first << "\n";
+        outputFile << "Vértices: ";
+
+        // Escrever os vértices do subgrafo
+        for (int vertex : currentSubGraph.second) {
+            outputFile << vertex << " ";
+        }
+
+        outputFile << "\n\n";  // Nova linha após cada subgrafo
+    }
+
+    outputFile.close();  // Fechar o arquivo
+}
+
+
+/// @note Ready for tests
 Graph::ReturnGraphDataMap Graph::getBFSTree(int U) {
     std::unordered_map<int, Graph::Data> bfsTree;
     std::unordered_map<int, int> mark(this->vertexAmount);
@@ -146,39 +175,147 @@ std::optional<int> Graph::getUVDistance(int U, int V) {
 }
 
 int Graph::getExactDiameter(){
-    int currentDiameter = 0;
-    int markReference = 0;
+    int maxDiameter = 0;
+    //int markReference = 0;
     std::unordered_map<int, int> mark;
     for (int V = 1; V <= vertexAmount; V++){
         mark[V] = 0;
     }
     for (int U = 1; U <= vertexAmount; U++){
-        markReference++;
-        std::unordered_map<int, int> level;
-        std::queue<int> S;
-        level[U] = 0;
-        mark[U] = markReference;
-        S.push(U);
-        while (!S.empty()){
-            int V = S.front();
-            S.pop();
-            for (const int& W : this->structure->getAdjArray(V)){
-                if (mark[W] != markReference){
-                    mark[W] = markReference;
-                    level[W] = level[V] + 1;
-                    if (level[W] > currentDiameter){
-                        currentDiameter = level[W];
+        int currentDiameter = helper_Diameter(U, mark, U);
+        if (currentDiameter > maxDiameter){
+            maxDiameter = currentDiameter;
+        }
+    }
+    return maxDiameter;
+}
+
+Graph::ReturnSubGraphHeap Graph::getGraphSubComp() {
+    Graph::ReturnSubGraphHeap maxHeap;
+    auto mark = initVertexMap(0);
+    //std::unordered_map<int, int> level;
+    for (int U = 1; U <= vertexAmount; U++){
+        if (mark[U] == 0){
+            std::vector<int> subGraph;
+            std::queue<int> S;
+            mark[U] = 1;
+            S.push(U);
+            subGraph.push_back(U);
+
+            while (!S.empty()){
+                int V = S.front();
+                S.pop();
+                for (const int& W : this->structure->getAdjArray(V)){
+                    if (mark[W] == 0){
+                        mark[W] = 1;
+                        S.push(W);
+                        subGraph.push_back(W);
                     }
-                    S.push(W);
                 }
+            }
+            maxHeap.push(std::make_pair(subGraph.size(), subGraph));
+        }
+    }
+    return maxHeap;
+
+}
+
+int Graph::getApproxDiameter(){
+    int maxDiameter = 0;
+    std::unordered_map<int, int> mark;
+    for (int V = 1; V <= vertexAmount; V++){
+        mark[V] = 0;
+    }
+    for (int U = 1; U <= vertexAmount; U++){
+        if (mark[U] == 0){
+            int currentDiameter = helper_Diameter(U, mark);
+            if (currentDiameter > maxDiameter){
+                maxDiameter = currentDiameter;
             }
         }
     }
-    return currentDiameter;
+
+
 }
 
 
-int Graph::getApproxDiameter(){
-    
+int Graph::helper_Diameter(int U, std::unordered_map<int, int>& mark, int markReference){
+    int currentDiameter = 0;
+    std::unordered_map<int, int> level;
+    std::queue<int> S;
+    level[U] = 0;
+    mark[U] = U;
+    S.push(U);
+    while (!S.empty()){
+        int V = S.front();
+        S.pop();
+        for (const int& W : this->structure->getAdjArray(V)){
+            if (mark[W] != U){
+                mark[W] = U;
+                level[W] = level[V] + 1;
+                if (level[W] > currentDiameter){
+                    currentDiameter = level[W];
+                }
+                S.push(W);
+            }
+        }
+    }
 
+}
+
+void Graph::printSearchTreeToFile(const ReturnGraphDataMap& searchTree, const std::string& filename, int root) {
+    std::string filePath = OUTPUT_PATH + filename;
+    std::ofstream outputFile(filePath);  // Abrir o arquivo para escrita
+
+    if (!outputFile.is_open()) {  // Verificar se o arquivo foi aberto corretamente
+        std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+        return;
+    }
+
+    // Escrever o cabeçalho da tabela
+    outputFile << "Vértice | Pai    | Nível\n";
+    outputFile << "--------|--------|-------\n";
+
+    // Percorrer todos os vértices no mapa de dados da busca
+    for (const auto& [vertex, data] : searchTree) {
+        // Se o vértice é a raiz (U), o pai deve ser representado por "-"
+        std::string parent = (vertex == root) ? "-" : std::to_string(data.parent);
+
+        // Escrever a linha correspondente ao vértice, pai e nível
+        outputFile << vertex << "       | " << parent << "      | " << data.level << "\n";
+    }
+
+    outputFile.close();  // Fechar o arquivo após a escrita
+}
+
+
+void Graph::printGraphStats(const Graph& graph, bool toFile, const std::string& filename = "") {
+    std::ostream* outStream;  // Ponteiro para stream de saída (arquivo ou terminal)
+    std::ofstream fileStream;
+    std::string filePath = OUTPUT_PATH + filename;
+    if (toFile) {
+        // Se 'toFile' é verdadeiro, abrir o arquivo
+        fileStream.open(filePath);
+        if (!fileStream.is_open()) {
+            std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+            return;
+        }
+        outStream = &fileStream;  // Usar o arquivo como stream de saída
+    } else {
+        // Caso contrário, usar std::cout (terminal)
+        outStream = &std::cout;
+    }
+
+    // Escrever as informações estatísticas
+    *outStream << "Número de vértices: " << this->vertexAmount << "\n";
+    *outStream << "Número de arestas: " << this->edgeAmount << "\n";
+    *outStream << "Grau mínimo: " << this->getMinDegree() << "\n";
+    *outStream << "Grau máximo: " << this->getMaxDegree() << "\n";
+    *outStream << "Grau médio: " << this->getMean() << "\n";
+    *outStream << "Mediana do grau: " << this->getMedian() << "\n";
+
+    // Fechar o arquivo, se foi utilizado
+    if (toFile) {
+        fileStream.close();
+    }
 }
