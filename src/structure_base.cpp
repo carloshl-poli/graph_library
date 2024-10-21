@@ -1,11 +1,11 @@
 #include "structure_base.hpp"
 
 int Structure::getEdgeAmount(){
-    return vertexAmount;
+    return edgeAmount;
 }
 
 int Structure::getVertexAmount(){
-    return edgeAmount;
+    return vertexAmount;
 }
 
 
@@ -71,7 +71,7 @@ Structure::Structure(const std::string &path, bool isDirected) {
     }
     graphFile.close();
 }
-*/
+
 
 int Structure::getUDegree(int U){
     return this->degreeVec[U - 1];
@@ -84,7 +84,8 @@ void Structure::updateWeight(std::size_t u, double weight) {
         weightVec[u] = weight;
     }
 }
-
+*/
+/*
 std::optional<double> Structure::getUWeight(int U){
     return this->weightVec[U - 1];
 }
@@ -109,6 +110,7 @@ std::vector<std::optional<double>> Structure::getWeightedDegreeVec() {
     }
     return weightedVec;
 }
+*/
 
 void Structure::helper_init(std::string line, bool isDirected) {
     std::istringstream iss(line);
@@ -130,8 +132,11 @@ void Structure::helper_init(std::string line, bool isDirected) {
     }
 }
 
-void Structure::initStruct(const std::string &path, bool isDirected, bool isWeighted)
-{
+void Structure::initStruct(const std::string &path, bool isDirected, bool isWeighted) {
+    if (isDirected){
+        throw std::runtime_error("Error! Directed Graphs aren't currently supported");
+    }
+
     std::string line;
     std::ifstream graphFile(path);
     this->edgeAmount = 0;
