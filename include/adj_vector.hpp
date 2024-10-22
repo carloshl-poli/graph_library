@@ -13,24 +13,23 @@
 
 class AdjVector : public Structure
 {
-private:
-    std::vector<std::vector<std::pair<int, double>>> body;
-public:
-    AdjVector(const std::string &path, bool isDirected = false);
-    ~AdjVector();
-    int getEdgeUV(int U, int V);
-    void setWeightUV(int U, int V, double newWeight);
-    void printGraph() override;
+    private:
+        std::vector<std::vector<std::pair<int, double>>> body;
 
-    void resize(int size) override;
-    void insertEdge(int u,int V,double w) override;
-    bool hasEdgeUV(int U, int V) override;
-    std::optional<double> getWeightUV(int U, int V) override;
-    ReturnType getUAdjArray(int U, bool getWeight = false);
-    std::vector<int> getAdjArray(int U) override;
-    std::vector<std::pair<int, double>> getAdjWeightedArray(int U) override;
+        int getEdgeUV(int U, int V);
+    protected:
+        void resize(int size) override;
+        void insertEdge(int u,int V,double w) override;
 
-    
+    public:
+        AdjVector(const std::string &path, bool isWeighted, bool isDirected = false);
+        ~AdjVector () = default;
+
+        bool hasEdgeUV(int U, int V) override;
+        double getWeightUV(int U, int V) override;
+
+        std::vector<int> getAdjArray(int U) override;
+        std::vector<std::pair<int, double>> getAdjWeightedArray(int U) override;
 };
 
 

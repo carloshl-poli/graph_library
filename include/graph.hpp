@@ -22,6 +22,7 @@
 using VertexDataVec = std::variant<std::unordered_map<int, std::pair<int, int>>,
                       std::deque<int>>;
 
+class Structure;
 
 enum class GraphStructure{
     AdjMatrix,
@@ -52,6 +53,7 @@ class Graph {
                 return a.first < b.first;
             }
         };
+
     protected:
         int vertexAmount;
         bool directed;
@@ -68,12 +70,13 @@ class Graph {
             friend class Graph;
         };
 
+        auto getDataArray(Structure& obj);
     public:
         using ReturnGraphDataMap = std::unordered_map<int, Graph::Data>;
         using ReturnSubGraphHeap = std::priority_queue<std::pair<int, std::vector<int>>, std::vector<std::pair<int, std::vector<int>>>, Graph::MaxHeapComparator>;
 
         Graph(): vertexAmount(0), directed(false), hasWeight(false){}
-        Graph(std::string &path, GraphStructure structure, bool isDirected = false);
+        Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted);
         ~Graph() = default;
 
         //Graph Basic Data Methods

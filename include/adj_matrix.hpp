@@ -11,23 +11,23 @@
 #include <stdexcept>
 #include <optional>
 
-class AdjMatrix : public Structure
-{
-private:
-    std::vector<std::vector<std::optional<double>>> body;
-public:
-    AdjMatrix(const std::string &path, bool isDirected = false);
-    ~AdjMatrix ();
+class AdjMatrix : public Structure {
+    private:
+        std::vector<std::vector<std::optional<double>>> body;
 
-    void resize(int size) override;
-    void insertEdge(int u,int V,double w) override;
-    bool hasEdgeUV(int U, int V) override;
-    std::optional<double> getWeightUV(int U, int V) override;
-    ReturnType getUAdjArray(int U, bool getWeight = false);
-    void printGraph() override;
+    protected:
+        void resize(int size) override;
+        void insertEdge(int u,int V,double w) override;
 
-    std::vector<int> getAdjArray(int U);
-    std::vector<std::pair<int, double>> getAdjWeightedArray(int U);
+    public:
+        AdjMatrix(const std::string &path, bool isWeighted, bool isDirected = false);
+        ~AdjMatrix () = default;
+
+        bool hasEdgeUV(int U, int V) override;
+        double getWeightUV(int U, int V) override;
+
+        std::vector<int> getAdjArray(int U) override;
+        std::vector<std::pair<int, double>> getAdjWeightedArray(int U) override;
 
 };
 

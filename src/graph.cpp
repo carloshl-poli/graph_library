@@ -1,22 +1,22 @@
 #include "graph.hpp"
 
 // Construtor
-Graph::Graph(std::string &path, GraphStructure structure, bool isDirected){
+Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted){
     switch (structure) {
         case GraphStructure::AdjMatrix:
-            this->structure = std::make_unique<AdjMatrix>(path, isDirected);
+            this->structure = std::make_unique<AdjMatrix>(path, isWeighted, isDirected);
             break;
         case GraphStructure::AdjVector:
-            this->structure = std::make_unique<AdjVector>(path, isDirected);
+            this->structure = std::make_unique<AdjVector>(path, isWeighted, isDirected);
             break;
         default:
-            throw std::out_of_range("Error: Invalid or not supported Structure");
+            throw std::invalid_argument("Error: Invalid or not supported Structure");
             break;
     }
 
     this->vertexAmount = this->structure->getVertexAmount();
     this->edgeAmount = this->structure->getEdgeAmount();
-    this->hasWeight = this->structure->hasWeight;
+    this->hasWeight = this->structure->hasWeight();
 
 }
 
@@ -262,6 +262,7 @@ int Graph::helper_Diameter(int U, std::unordered_map<int, int>& mark, int markRe
     }
 
 }
+
 
 void Graph::printSearchTreeToFile(const ReturnGraphDataMap& searchTree, const std::string& filename, int root) {
     std::string filePath = OUTPUT_PATH + filename;

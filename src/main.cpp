@@ -33,7 +33,7 @@ void printValues(const ReturnType& values) {
         }
     }, values);
 }
-
+/*
 int main(){
     std::cout << "testing 2" << std::endl;
     //Graph graph;
@@ -43,3 +43,4 @@ int main(){
     AdjMatrix vec(file_path);
     printValues(vec.getUAdjArray(5));
 }
+*/

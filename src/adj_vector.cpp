@@ -2,65 +2,8 @@
 
 
 
-AdjVector::AdjVector(const std::string &path, bool isDirected) {
-    std::string line;
-    std::ifstream graphFile(path);
-    this->edgeAmount = 0;
-    this->vertexAmount = 0;
-
-    if (!graphFile.is_open()){
-        std::cerr << "Error! Couldn't open graph" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    //Set vertex Amount to the first line
-    if (getline(graphFile, line)){
-        this->vertexAmount = std::stoi(line);
-    }
-
-    this->resize(this->vertexAmount);
-    this->degreeVec.resize(this->vertexAmount, 0);
-    this->weightVec.resize(this->vertexAmount, 0);
-
-    while (getline(graphFile, line)){
-        std::istringstream iss(line);
-        int u, v, U, V;
-        double weight;
-
-        if (iss >> U >> V){
-            u = U - 1;
-            v = V - 1;
-
-            if (u < 0 || v < 0 || u >= this->vertexAmount || v >= this->vertexAmount) {
-                throw std::out_of_range("Error! índex out of bounds");
-            }
-
-            if (!(iss >> weight)){
-                weight = 1.0;
-            } 
-            this->insertEdge(u,V, weight);
-            this->edgeAmount++;
-            this->degreeVec[u]++;
-            this->updateWeight(u, weight);
-            if (!isDirected){
-                this->insertEdge(v,U, weight);
-                this->degreeVec[v]++;
-                this->updateWeight(v, weight);
-            }
-        }
-
-    }
-    ///TODO: LIMPAR ESSE LIXO
-    graphFile.clear();
-    graphFile.seekg(0);
-    getline(graphFile, line);
-    getline(graphFile, line);
-    std::istringstream iss(line);
-    int a, b;
-    double c;
-    if (iss >> a >> b >> c){
-        this->hasWeight = true;
-    }
-    graphFile.close();
+AdjVector::AdjVector(const std::string &path, bool isWeighted, bool isDirected) {
+    this->initStruct(path, isDirected, isWeighted);
 }
 
 void AdjVector::insertEdge(int U, int V, double weight) {
@@ -72,65 +15,33 @@ void AdjVector::resize(int size){
 }
 
 int AdjVector::getEdgeUV(int U, int V){
-    for (int index = 0; index < this->body[U - 1].size(); index++){
-        if (this->body[U-1][index].first == V){
-            return index;
+    int u = U - 1;
+    for (int v = 0; v < this->body[u].size(); v++){
+        if (this->body[u][v].first == V){
+            return v;
         }
     }
-    throw std::out_of_range("Error: There is no edge between vertices "
+    throw std::invalid_argument("Error: There is no edge between vertices "
         + std::to_string(V) + " and " + std::to_string(U) + ".");
 }
 
-bool AdjVector::hasEdgeUV(int U, int V){
+bool AdjVector::hasEdgeUV(int U, int V) {
     int index;
     try
     {
         index = this->getEdgeUV(U,V);
         return true;
     }
-    catch(const std::out_of_range& e)
+    catch(const std::invalid_argument& e)
     {
         return false;
     }
 }
     
 
-std::optional<double> AdjVector::getWeightUV(int U, int V){
+double AdjVector::getWeightUV(int U, int V){
     int v = this->getEdgeUV(U,V);
     return this->body[U-1][v].second;
-}
-
-void AdjVector::setWeightUV(int U, int V, double newWeight){
-    int v = this->getEdgeUV(U,V);
-    this->body[U-1][v].second = newWeight;
-}
-
-void AdjVector::printGraph() {
-    std::cout << "Edge list (u -> v):\n";
-    for (int u = 0; u < this->body.size(); u++) {
-        for (const auto& edge : this->body[u]) {
-            int v = edge.first;
-            double weight = edge.second;
-            std::cout << (u + 1) << " -> " << v << " [weight: " << weight << "]\n";
-        }
-    }
-}
-
-/// @deprecated
-ReturnType AdjVector::getUAdjArray(int U, bool getWeight){
-    if (getWeight) {
-        // Converter para o formato necessário com std::optional<double>
-        std::vector<std::pair<int, std::optional<double>>> weightedArray;
-        for (const auto& pair : this->body[U - 1]) {
-            weightedArray.push_back({pair.first, pair.second});  // Envolva o segundo valor com std::optional
-        }
-        return weightedArray;  // Retorna o vector de pares com std::optional<double>
-    }
-    std::vector<int> intArray;
-    for (int i = 0; i < this->body[U - 1].size(); i++){
-        intArray.push_back(this->body[U - 1][i].first);
-    }
-    return intArray;
 }
 
 std::vector<int> AdjVector::getAdjArray(int U) {
@@ -149,8 +60,4 @@ std::vector<std::pair<int, double>> AdjVector::getAdjWeightedArray(int U) {
             weightedArray.push_back({pair.first, pair.second});
     }
     return this->body[u];
-}
-
-AdjVector::~AdjVector()
-{
 }
