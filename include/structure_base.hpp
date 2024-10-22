@@ -47,7 +47,7 @@ class Structure {
          * 
          * @todo Missing implementation.
          */
-        void helper_initWeighted(std::string line, bool isDirected);
+        //void helper_initWeighted(std::string line, bool isDirected);
 
         
 
@@ -67,7 +67,7 @@ class Structure {
             friend class Structure;
             friend class AdjMatrix;
             friend class AdjVector;
-            friend class Graph;
+            
         };
 
         /// Class attibutes ///
@@ -114,7 +114,6 @@ class Structure {
          */
         virtual void resize(int size) = 0;
 
-
         /**
          * @brief Constructs a new instance of the Structure class.
          * 
@@ -123,6 +122,7 @@ class Structure {
          */
         Structure() = default;
 
+    public:
 
         /**
          * @brief Virtual destructor for the Structure class.
@@ -131,11 +131,6 @@ class Structure {
          * an object is deleted through a pointer to the base class.
          */
         virtual ~Structure() = default;
-
-
-
-
-    public:
 
         /**
          * @brief Gets a map of vertices data
@@ -198,7 +193,7 @@ class Structure {
          * 
          * @todo find out if this method is necessary, if so still needs implementation.
          */
-        virtual std::unordered_map<std::optional<double>, std::pair<int, int>> getEdgeList();
+        //virtual std::unordered_map<std::optional<double>, std::pair<int, int>> getEdgeList();
         
         /**
          * @brief Gets a list of all adjacent vertices of U.

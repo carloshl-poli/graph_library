@@ -3,7 +3,7 @@
 #include "adj_matrix.hpp"
 #include "structure_base.hpp"
 #include <iostream>
-
+/*
 void printValues(const ReturnType& values) {
     // Usando std::visit para lidar com os diferentes tipos de valores
     std::visit([](auto&& arg) {
@@ -33,14 +33,21 @@ void printValues(const ReturnType& values) {
         }
     }, values);
 }
-/*
+*/
+
 int main(){
     std::cout << "testing 2" << std::endl;
-    //Graph graph;
-    std::string file_path = "../test_subjects/text_file.txt";
-    //graph.setSize(10);
-    //graph.importEDG();
-    AdjMatrix vec(file_path);
-    printValues(vec.getUAdjArray(5));
+    std::string file_path = "../test_subjects/grafo_1.txt";
+    Graph *graph = new Graph(file_path, GraphStructure::AdjVector, false, false);
+    int dist10_20 = graph->getUVDistance(10, 20).value();
+    int dist10_30 = graph->getUVDistance(10, 30).value();
+    int dist20_30 = graph->getUVDistance(20, 30).value();
+    std::cout << "A distancia entre 10 e 20 e: " << dist10_20 << std::endl;
+    std::cout << "A distancia entre 10 e 30 e: " << dist10_30 << std::endl;
+    std::cout << "A distancia entre 20 e 30 e: " << dist20_30 << std::endl;
+    std::cout << "Done tests" << std::endl;
+    
+
+    free(graph);
+    
 }
-*/

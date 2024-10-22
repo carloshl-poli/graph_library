@@ -37,7 +37,7 @@ struct VertexTempData {
 
 class Graph {
     private:
-        int Graph::helper_Diameter(int U, std::unordered_map<int, int>& mark, int markReference = 1);
+        int helper_Diameter(int U, std::unordered_map<int, int>& mark, int markReference = 1);
         template <typename T>
         std::unordered_map<int, T> initVertexMap(T value)
         {
@@ -66,6 +66,7 @@ class Graph {
             int parent;
 
             Data(int level, int parent) : parent(parent), level(level) {}
+            Data() : parent(-1), level(-1) {}
 
             friend class Graph;
         };

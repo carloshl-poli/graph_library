@@ -235,7 +235,7 @@ int Graph::getApproxDiameter(){
         }
     }
 
-
+    return maxDiameter;
 }
 
 
@@ -260,6 +260,8 @@ int Graph::helper_Diameter(int U, std::unordered_map<int, int>& mark, int markRe
             }
         }
     }
+
+    return currentDiameter;
 
 }
 

@@ -54,11 +54,12 @@ void Structure::initStruct(const std::string &path, bool isDirected, bool isWeig
     this->resize(this->vertexAmount);
 
     while (getline(graphFile, line)){
-        if (isWeighted){
+        if (!isWeighted){
             this->helper_init(line, isDirected);
         }
         else {
-            this->helper_initWeighted(line, isDirected);
+            throw std::logic_error("NÃO IMPLEMENTADO AINDA");
+            //this->helper_initWeighted(line, isDirected);
         }
     }
     graphFile.close();
@@ -77,4 +78,5 @@ int Structure::getUDegree(int U) {
 bool Structure::hasWeight() {
     return isWeighted;
 }
+
 
