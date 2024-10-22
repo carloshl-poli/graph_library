@@ -14,3 +14,7 @@ build/
 
 # Ignorar arquivos de log
 *.log
+
+test_subjects/*
+!grafo_1.txt
+!text_file.txt

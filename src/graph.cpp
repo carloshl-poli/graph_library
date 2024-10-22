@@ -143,6 +143,7 @@ Graph::ReturnGraphDataMap Graph::getDFSTree(int U) {
     P.push(U);
     while (!P.empty()){
         int V = P.top();
+        P.pop();
         if (mark[V] == 0){
             mark[V] = 1;
             for (const int& W: this->structure->getAdjArray(V)){
@@ -218,6 +219,14 @@ Graph::ReturnSubGraphHeap Graph::getGraphSubComp() {
     }
     return maxHeap;
 
+}
+
+int Graph::getVertexAmount() {
+    return this->vertexAmount;
+}
+
+int Graph::getEdgeAmount() {
+    return this->edgeAmount;
 }
 
 int Graph::getApproxDiameter(){

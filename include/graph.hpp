@@ -112,6 +112,8 @@ class Graph {
 
         //Graph Utility Methods
         ReturnSubGraphHeap getGraphSubComp();
+        int getVertexAmount();
+        int getEdgeAmount();
 
 };
 
