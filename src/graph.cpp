@@ -1,5 +1,19 @@
 #include "graph.hpp"
 
+std::pair<int, std::string> extractNumberName(const std::string& numberName){
+    size_t pos = numberName.find(',');
+    int number;
+    std::string name;
+    if (pos == std::string::npos){
+        throw std::invalid_argument("string format is invalid");
+    }
+    number = std::stoi(numberName.substr(0, pos));
+    name = numberName.substr(pos + 1);
+    
+    
+    return std::make_pair(number, name);
+}
+
 // Construtor
 Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted){
     switch (structure) {
@@ -18,6 +32,41 @@ Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool 
     this->edgeAmount = this->structure->getEdgeAmount();
     this->hasWeight = this->structure->hasWeight();
 
+}
+
+Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted, std::string &names) {
+    helper_init(path, structure, isDirected, isWeighted);
+
+    std::string line;
+    std::ifstream namesFile(names);
+
+    if (!namesFile.is_open()){
+        throw std::runtime_error("Error! Couldn't open names file");
+    }
+
+    while (getline(namesFile, line)){
+        auto name = extractNumberName(line);
+        this->nameMap[name.first] = name.second;
+    }
+
+}
+
+void Graph::helper_init(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted) {
+    switch (structure) {
+        case GraphStructure::AdjMatrix:
+            this->structure = std::make_unique<AdjMatrix>(path, isWeighted, isDirected);
+            break;
+        case GraphStructure::AdjVector:
+            this->structure = std::make_unique<AdjVector>(path, isWeighted, isDirected);
+            break;
+        default:
+            throw std::invalid_argument("Error: Invalid or not supported Structure");
+            break;
+    }
+
+    this->vertexAmount = this->structure->getVertexAmount();
+    this->edgeAmount = this->structure->getEdgeAmount();
+    this->hasWeight = this->structure->hasWeight();
 }
 
 double Graph::getMean(){
@@ -160,6 +209,43 @@ Graph::ReturnGraphDataMap Graph::getDFSTree(int U) {
     return dfsTree;
 }
 
+std::unordered_map<int, std::pair<int, double>> Graph::getDijkstraTree(int U, bool useHeap) {
+    if (!hasWeight){
+        throw std::logic_error("Error! Cannot use dijkstra in weightless graph");
+    }
+    PairingHeap heap;
+    std::unordered_map<int, double> dist;
+    std::unordered_map<int, std::pair<int, double>> dijkstraTree; 
+    for (int V = 1; V <= getVertexAmount(); V++){
+        dist[V] = std::numeric_limits<double>::max();
+        heap.insert(V, dist[V]);
+    }
+    dist[U] = 0;
+    dijkstraTree[U] = {0, 0.0};
+    heap.decreaseKey(U, 0);
+    
+    while (!heap.isEmpty()){
+        int V = heap.findMin();
+        heap.deleteMin();
+
+        for (auto& neighbor : this->structure->getAdjWeightedArray(V)){
+            int W = neighbor.first;
+            int weight = neighbor.second;
+            if (weight < 0){
+                throw std::logic_error("Negative weights aren't yet supported");
+            }
+
+            if (dist[W] > dist[V] + weight){
+                dist[W] = dist[V] + weight;
+                dijkstraTree[W] = {V, dist[W]};
+                heap.decreaseKey(W, dist[W]);
+            }
+        }
+    }
+
+    return dijkstraTree;
+}
+
 /// @brief Calculate the Minimal distance between 2 vertices
 /// @param U is the first vertice
 /// @param V is the second vertice
@@ -173,6 +259,19 @@ std::optional<int> Graph::getUVDistance(int U, int V) {
     catch (const std::out_of_range& e){
         return std::nullopt;
     }   
+}
+
+std::optional<double> Graph::getUVDistance(int U, int V, bool weightedDist, bool useHeap) {
+    if (!hasWeight){
+        throw std::logic_error("Cant measure weight distance in weightless graph");
+    }
+
+    try {
+        return getDijkstraTree(U, useHeap).at(V).second;
+    }
+    catch (const std::out_of_range& e){
+        return std::nullopt;
+    }
 }
 
 int Graph::getExactDiameter(){
@@ -248,7 +347,9 @@ int Graph::getApproxDiameter(){
 }
 
 
-int Graph::helper_Diameter(int U, std::unordered_map<int, int>& mark, int markReference){
+
+int Graph::helper_Diameter(int U, std::unordered_map<int, int> &mark, int markReference)
+{
     int currentDiameter = 0;
     std::unordered_map<int, int> level;
     std::queue<int> S;
@@ -271,9 +372,7 @@ int Graph::helper_Diameter(int U, std::unordered_map<int, int>& mark, int markRe
     }
 
     return currentDiameter;
-
 }
-
 
 void Graph::printSearchTreeToFile(const ReturnGraphDataMap& searchTree, const std::string& filename, int root) {
     std::string filePath = OUTPUT_PATH + filename;

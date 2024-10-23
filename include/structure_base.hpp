@@ -47,7 +47,7 @@ class Structure {
          * 
          * @todo Missing implementation.
          */
-        //void helper_initWeighted(std::string line, bool isDirected);
+        void helper_initWeighted(std::string line, bool isDirected);
 
         
 
@@ -60,6 +60,7 @@ class Structure {
          */
         struct Data {
             int degree = 0;
+            std::string name;
 
             Data() = default;
 
