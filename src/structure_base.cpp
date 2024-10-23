@@ -28,6 +28,29 @@ void Structure::helper_init(std::string line, bool isDirected) {
     }
 }
 
+void Structure::helper_initWeighted(std::string line, bool isDirected) {
+    std::istringstream iss(line);
+    int U, V;
+    double w;
+    if (iss >> U >> V >> w){
+        if (U < 1 || V < 1 || U > this->vertexAmount || V > this->vertexAmount) {
+            throw std::out_of_range("Error! índex out of bounds");
+        }
+        this->insertEdge(U, V, w);
+        this->edgeAmount++;
+        this->insertEdge(U,V);
+        this->edgeAmount++;
+        this->data[U].degree++;
+        if (!isDirected){
+            this->insertEdge(V,U);
+            this->data[U].degree++;
+        }
+    }
+    else {
+        throw std::invalid_argument("line must be 'int int double'");
+    }
+}
+
 void Structure::initStruct(const std::string &path, bool isDirected, bool isWeighted) {
     if (isDirected){
         throw std::runtime_error("Error! Directed Graphs aren't currently supported");
@@ -58,8 +81,8 @@ void Structure::initStruct(const std::string &path, bool isDirected, bool isWeig
             this->helper_init(line, isDirected);
         }
         else {
-            throw std::logic_error("NÃO IMPLEMENTADO AINDA");
-            //this->helper_initWeighted(line, isDirected);
+            //throw std::logic_error("NÃO IMPLEMENTADO AINDA");
+            this->helper_initWeighted(line, isDirected);
         }
     }
     graphFile.close();

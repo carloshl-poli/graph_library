@@ -1,51 +1,50 @@
-#ifndef PAIRING_HEAP_H
-#define PAIRING_HEAP_H
+#ifndef PAIRING_HEAP_HPP
+#define PAIRING_HEAP_HPP
 
-#include <iostream>
-#include <vector>
+#include <unordered_map>
 #include <limits>
+#include <iostream>
 
-template <typename T>
-class PairingHeap {
-private:
-    struct Node {
-        T key;
-        Node* child;
-        Node* sibling;
-        Node* prev;
+struct HeapNode {
+    int value;  // Valor associado (distância, por exemplo)
+    int vertex; // Vértice associado
+    HeapNode* child;
+    HeapNode* sibling;
 
-        Node(T k) : key(k), child(nullptr), sibling(nullptr), prev(nullptr) {}
-    };
-
-    Node* root;
-
-    // Meld two heaps
-    Node* meld(Node* h1, Node* h2);
-
-    // Meld all siblings (used for deleteMin)
-    Node* meldSiblings(Node* node);
-
-public:
-    PairingHeap() : root(nullptr) {}
-    ~PairingHeap();
-
-    // Insert a new key
-    Node* insert(T key);
-
-    // Find the minimum key
-    T findMin() const;
-
-    // Delete the minimum key
-    void deleteMin();
-
-    // Decrease the key of a given node
-    void decreaseKey(Node* node, T newKey);
-
-    // Check if the heap is empty
-    bool isEmpty() const;
-
-    // Clear the heap
-    void clear(Node* node);
+    HeapNode(int val, int v) : value(val), vertex(v), child(nullptr), sibling(nullptr) {}
 };
 
-#endif 
+class PairingHeap {
+private:
+    HeapNode* root;  // Raiz do heap
+    std::unordered_map<int, HeapNode*> heapMap;  // Mapeia os vértices para os nós do heap
+
+    // Função auxiliar para mesclar dois heaps
+    HeapNode* meld(HeapNode* a, HeapNode* b);
+
+    // Mescla todos os filhos de um nó
+    HeapNode* mergeSiblings(HeapNode* node);
+
+public:
+    PairingHeap();
+
+    // Inserir um novo vértice com um valor
+    void insert(int vertex, int value);
+
+    // Retorna o vértice de menor valor (find-min)
+    int findMin() const;
+
+    // Remove o vértice de menor valor (delete-min)
+    void deleteMin();
+
+    // Diminui a chave de um vértice no heap
+    void decreaseKey(int vertex, int newValue);
+
+    // Verifica se o heap está vazio
+    bool isEmpty() const;
+
+    // Limpa o heap e libera memória
+    void clear();
+};
+
+#endif

@@ -54,10 +54,17 @@ std::vector<int> AdjVector::getAdjArray(int U) {
 }
 
 std::vector<std::pair<int, double>> AdjVector::getAdjWeightedArray(int U) {
+    if (!isWeighted){
+        throw std::logic_error("This Graph is weightless");
+    }
     int u = U - 1;
-    std::vector<std::pair<int, std::optional<double>>> weightedArray;
+    return this->body[u];
+
+
+    /*
+    std::vector<std::pair<int, double>> weightedArray;
     for (const auto& pair : this->body[u]) {
             weightedArray.push_back({pair.first, pair.second});
     }
-    return this->body[u];
+    */
 }

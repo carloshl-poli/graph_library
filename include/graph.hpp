@@ -6,6 +6,7 @@
 #include "structure_base.hpp"
 #include "adj_matrix.hpp"
 #include "adj_vector.hpp"
+#include "pairing_heap.hpp"
 #include <memory>
 #include <deque>
 #include <stack>
@@ -17,6 +18,7 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
+#include <limits>
 
 #define OUTPUT_PATH "../output/"
 using VertexDataVec = std::variant<std::unordered_map<int, std::pair<int, int>>,
@@ -37,6 +39,8 @@ struct VertexTempData {
 
 class Graph {
     private:
+        
+
         int helper_Diameter(int U, std::unordered_map<int, int>& mark, int markReference = 1);
         template <typename T>
         std::unordered_map<int, T> initVertexMap(T value)
@@ -53,6 +57,11 @@ class Graph {
                 return a.first < b.first;
             }
         };
+
+        std::unordered_map<int, std::string> nameMap;
+
+        void helper_init(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted);
+
 
     protected:
         int vertexAmount;
@@ -71,13 +80,16 @@ class Graph {
             friend class Graph;
         };
 
-        auto getDataArray(Structure& obj);
+        //auto getDataArray(Structure& obj);
     public:
         using ReturnGraphDataMap = std::unordered_map<int, Graph::Data>;
-        using ReturnSubGraphHeap = std::priority_queue<std::pair<int, std::vector<int>>, std::vector<std::pair<int, std::vector<int>>>, Graph::MaxHeapComparator>;
+        using ReturnSubGraphHeap = std::priority_queue<std::pair<int, std::vector<int>>,
+                                   std::vector<std::pair<int, std::vector<int>>>,
+                                   Graph::MaxHeapComparator>;
 
         Graph(): vertexAmount(0), directed(false), hasWeight(false){}
         Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted);
+        Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted, std::string &names);
         ~Graph() = default;
 
         //Graph Basic Data Methods
@@ -96,7 +108,8 @@ class Graph {
         //Graph Basic Algorithm
         ReturnGraphDataMap getBFSTree(int U);
         ReturnGraphDataMap  getDFSTree(int U);
-        ReturnGraphDataMap  getDijkstraTree(int U, bool useHeap = true);
+        std::unordered_map<int, std::pair<int, double>>  getDijkstraTree(int U, bool useHeap);
+        std::unordered_map<int, std::pair<int, double>>  getDijkstraTree(int U);
         ReturnGraphDataMap  getPrimmMST();
         ReturnGraphDataMap  getKruskalMST();
 
@@ -107,6 +120,7 @@ class Graph {
 
         //Graph Basic Measure Methods
         std::optional<int> getUVDistance(int U, int V);
+        std::optional<double> getUVDistance(int U, int V, bool weightedDist, bool useHeap);
         int getApproxDiameter();
         int getExactDiameter();
 
