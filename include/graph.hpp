@@ -19,6 +19,7 @@
 #include <numeric>
 #include <cmath>
 #include <limits>
+#include <map>
 
 #define OUTPUT_PATH "../output/"
 using VertexDataVec = std::variant<std::unordered_map<int, std::pair<int, int>>,
@@ -62,6 +63,8 @@ class Graph {
 
         void helper_init(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted);
 
+        
+
 
     protected:
         int vertexAmount;
@@ -104,6 +107,9 @@ class Graph {
         void printSubGraphsToFile(const ReturnSubGraphHeap& subGraphHeap, const std::string& filename);
         void printSearchTreeToFile(const ReturnGraphDataMap &searchTree, const std::string &filename, int root);
         void printGraphStats(const Graph &graph, bool toFile, const std::string &filename);
+        
+        
+
 
         //Graph Basic Algorithm
         ReturnGraphDataMap getBFSTree(int U);
@@ -120,7 +126,8 @@ class Graph {
 
         //Graph Basic Measure Methods
         std::optional<int> getUVDistance(int U, int V);
-        std::optional<double> getUVDistance(int U, int V, bool weightedDist, bool useHeap);
+        std::optional<double> getUVDistance(int U, int V, bool useHeap);
+        
         int getApproxDiameter();
         int getExactDiameter();
 
@@ -128,6 +135,22 @@ class Graph {
         ReturnSubGraphHeap getGraphSubComp();
         int getVertexAmount();
         int getEdgeAmount();
+        std::stack<int> getPathUV(int U, int V, bool useHeap);
+
+        //Templates
+
+        template <typename T>
+        std::vector<T> getNamedPath(int U, int V, bool useHeap){
+            std::vector<T> namedPath;
+            auto path = this->getPathUV(U, V, useHeap);
+            while (!path.empty()) {
+                namedPath.emplace_back(nameMap[path.top()]);
+                path.pop();
+            }
+            return namedPath;
+        }
+
+        
 
 };
 

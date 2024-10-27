@@ -14,6 +14,8 @@ std::pair<int, std::string> extractNumberName(const std::string& numberName){
     return std::make_pair(number, name);
 }
 
+
+
 // Construtor
 Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted){
     switch (structure) {
@@ -232,7 +234,7 @@ std::unordered_map<int, std::pair<int, double>> Graph::getDijkstraTree(int U, bo
             int W = neighbor.first;
             int weight = neighbor.second;
             if (weight < 0){
-                throw std::logic_error("Negative weights aren't yet supported");
+                throw std::logic_error("Support for negative weights is not yet available.");
             }
 
             if (dist[W] > dist[V] + weight){
@@ -245,6 +247,43 @@ std::unordered_map<int, std::pair<int, double>> Graph::getDijkstraTree(int U, bo
 
     return dijkstraTree;
 }
+
+std::unordered_map<int, std::pair<int, double>> Graph::getDijkstraTree(int U) {
+    if (!hasWeight){
+        throw std::logic_error("Error! Cannot use dijkstra in weightless graph");
+    }
+    int V, W;
+    double minDist, weight;
+    double inf = std::numeric_limits<double>::max();
+    auto dist = initVertexMap(inf);
+    std::unordered_map<int, int> S;
+    std::unordered_map<int, std::pair<int, double>> dijkstraTree;
+
+    dist[U] = 0;
+    do {
+        minDist = inf;
+        for (const auto& pair : dist){
+            if (minDist > pair.first && S.find(pair.second) == S.end()){
+                minDist = pair.first;
+                V = pair.second;
+            }
+        }
+        if (minDist == inf) break;
+        S[V] = 1;
+        for (const auto& neighbor : this->structure->getAdjWeightedArray(V)){
+            W = neighbor.first;
+            weight = neighbor.second;
+            if (dist[W] > dist[V] + weight){
+                dist[W] = dist[V] + weight;
+                dijkstraTree[W] = {V, dist[W]};
+            }
+        }
+
+    } while (S.size() != this->getVertexAmount());
+    
+    return dijkstraTree;
+}
+
 
 /// @brief Calculate the Minimal distance between 2 vertices
 /// @param U is the first vertice
@@ -261,17 +300,38 @@ std::optional<int> Graph::getUVDistance(int U, int V) {
     }   
 }
 
-std::optional<double> Graph::getUVDistance(int U, int V, bool weightedDist, bool useHeap) {
+std::optional<double> Graph::getUVDistance(int U, int V, bool useHeap) {
     if (!hasWeight){
         throw std::logic_error("Cant measure weight distance in weightless graph");
     }
 
     try {
-        return getDijkstraTree(U, useHeap).at(V).second;
+        if (useHeap) return getDijkstraTree(U, useHeap).at(V).second;
+        else return getDijkstraTree(U).at(V).second;
     }
     catch (const std::out_of_range& e){
         return std::nullopt;
     }
+}
+
+std::stack<int> Graph::getPathUV(int U, int V, bool useHeap) {
+    std::stack<int> path;
+    int pointer;
+    if (!hasWeight){
+        throw std::logic_error("Weightless Graph doesn't have weighted Path");
+    }
+    auto dijkstraTree = useHeap ? this->getDijkstraTree(U, useHeap) : this->getDijkstraTree(U);
+    if (dijkstraTree.find(V) != dijkstraTree.end()){
+        pointer = dijkstraTree[V].first;
+        path.push(V);
+        while (pointer != U){
+            path.push(pointer);
+            pointer = dijkstraTree[pointer].first;
+        }
+        path.push(U);
+    }
+    return path;
+    
 }
 
 int Graph::getExactDiameter(){
