@@ -148,16 +148,55 @@ int main() {
 
 
 */
+
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
 int main(){
     std::string graph_source_folder = "../test_subjects/";
-    std::string graph_file_name = "teste_peso.txt";
-    std::string file_path = graph_source_folder + graph_file_name;
-    Graph *graph = new Graph(file_path, GraphStructure::AdjVector, false, true);
-    std::cout << "Graph Initialized" << std::endl;
-    auto dist1_3 = graph->getUVDistance(1,3, true);
-    std::cout << "Distancia entre 1 e 3 deve ser 7: " << std::to_string(dist1_3) << std::endl;
+    std::string graph_file_name;
+    std::vector<std::string> graphFiles = {"grafo_W_5.txt"};
+    
+    // Abrindo o arquivo de log
+    std::ofstream log_file("log_output.txt", std::ios::app);
+    if (!log_file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de log." << std::endl;
+        return 1;
+    }
+
+    for (int index = 0; index < graphFiles.size(); index++) {
+        graph_file_name = graphFiles[index];
+        std::string file_path = graph_source_folder + graph_file_name;
+        Graph *graph = new Graph(file_path, GraphStructure::AdjVector, false, true);
+
+        // Imprimindo e gravando no arquivo de log
+        std::cout << "Graph " << index + 5 << " Initialized" << std::endl;
+        log_file << "Graph " << index + 5 << " Initialized" << std::endl;
+
+        std::cout << "Calculating distance between: " << std::endl;
+        log_file << "Calculating distance between: " << std::endl;
+
+        for (int count = 20; count <= 60; count += 10) {
+            auto dist = graph->getUVDistance(10, count, true);
+            std::cout << "10 -> " << count << " = " << std::to_string(dist) << std::endl;
+            log_file << "10 -> " << count << " = " << std::to_string(dist) << std::endl;
+        }
+
+        std::cout << "Graph " << index + 5 << " Finished" << std::endl;
+        log_file << "Graph " << index + 5 << " Finished" << std::endl;
+
+        delete graph;
+    }
+
+    // Fechando o arquivo de log
+    log_file.close();
     return 0;
 }
+
+
 
 
 /*

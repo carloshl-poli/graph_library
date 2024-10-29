@@ -1,6 +1,7 @@
 #ifndef STRUCTURE_BASE_HPP
 #define STRUCTURE_BASE_HPP
 
+#include "utilities.hpp"
 #include <iostream>
 #include <vector>
 #include <variant>
@@ -12,9 +13,10 @@
 #include <stdexcept>
 #include <optional>
 #include <unordered_map>
+#include <deque>
 
 using IntVec = std::vector<int>;
-using PairVec = std::vector<std::pair<int, std::optional<double>>>;
+using PairVec = std::vector<std::pair<int, std::optional<float>>>;
 using ReturnType = std::variant<IntVec, PairVec>;
 
 
@@ -100,7 +102,7 @@ class Structure {
          * @param V Destination vertex ID.
          * @param w Weight of the edge (U,V).
          */
-        virtual void insertEdge(int U,int V,double w = 1.0) = 0;
+        virtual void insertEdge(int U,int V,float w = 1.0) = 0;
 
         /**
          * @brief Initializes the Data struct that stores the graph.
@@ -180,7 +182,7 @@ class Structure {
          * @throw std::logic_error If this method is called on a weightless graph.
          * @throw std::invalid_argument if the Graph does not contain edge (U, V).
          */
-        virtual double getWeightUV(int V, int U) = 0;
+        virtual float getWeightUV(int V, int U) = 0;
         
 
         /**
@@ -214,13 +216,13 @@ class Structure {
          * 
          * @throw std::logic_error If this method is called on a weightless `Graph`.
          */
-        virtual std::vector<std::pair<int, double>> getAdjWeightedArray(int U) = 0;
+        virtual std::deque<std::pair<int, float>> getAdjWeightedArray(int U) = 0;
 
         /**
          * @brief Gets the amount of vertices in `Graph`
          * @return The amount of vertices in `Graph`
          */
-        int getVertexAmount();
+        int getVertexAmount() const;
 
         /**
          * @brief Gets the amount of edges in `Graph`

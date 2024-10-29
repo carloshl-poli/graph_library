@@ -6,8 +6,15 @@ AdjVector::AdjVector(const std::string &path, bool isWeighted, bool isDirected) 
     this->initStruct(path, isDirected, isWeighted);
 }
 
-void AdjVector::insertEdge(int U, int V, double weight) {
+void AdjVector::insertEdge(int U, int V, float weight) {
     this->body[U-1].emplace_back(V, weight);
+
+    static int insertCounter = 0;
+    insertCounter++;
+    if (insertCounter % 10 == 0) {
+        logMemoryUsage("Após inserir 100000 arestas no AdjVector", insertCounter);
+        std::cout << "numero de arestas inseridas = " << insertCounter << std::endl;
+    }
 }
 
 void AdjVector::resize(int size){
@@ -39,7 +46,7 @@ bool AdjVector::hasEdgeUV(int U, int V) {
 }
     
 
-double AdjVector::getWeightUV(int U, int V){
+float AdjVector::getWeightUV(int U, int V){
     int v = this->getEdgeUV(U,V);
     return this->body[U-1][v].second;
 }
@@ -53,7 +60,7 @@ std::vector<int> AdjVector::getAdjArray(int U) {
     return intArray;
 }
 
-std::vector<std::pair<int, double>> AdjVector::getAdjWeightedArray(int U) {
+std::deque<std::pair<int, float>> AdjVector::getAdjWeightedArray(int U) {
     if (!isWeighted){
         throw std::logic_error("This Graph is weightless");
     }
@@ -62,7 +69,7 @@ std::vector<std::pair<int, double>> AdjVector::getAdjWeightedArray(int U) {
 
 
     /*
-    std::vector<std::pair<int, double>> weightedArray;
+    std::vector<std::pair<int, float>> weightedArray;
     for (const auto& pair : this->body[u]) {
             weightedArray.push_back({pair.first, pair.second});
     }

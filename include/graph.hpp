@@ -7,6 +7,7 @@
 #include "adj_matrix.hpp"
 #include "adj_vector.hpp"
 #include "pairing_heap.hpp"
+#include "utilities.hpp"
 #include <memory>
 #include <deque>
 #include <stack>
@@ -90,7 +91,7 @@ class Graph {
         std::unique_ptr<Structure> structure; //TEMP
         struct DijkstraNode {
             int parent;
-            double distance;
+            float distance;
 
             DijkstraNode() : parent(-1), distance(-1) {}
 
@@ -140,7 +141,7 @@ class Graph {
 
         //Graph Basic Measure Methods
         int getUVDistance(int U, int V);
-        double getUVDistance(int U, int V, bool useHeap);
+        float getUVDistance(int U, int V, bool useHeap);
         
         int getApproxDiameter();
         int getExactDiameter();

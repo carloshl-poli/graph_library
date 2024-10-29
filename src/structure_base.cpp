@@ -1,11 +1,11 @@
 #include "structure_base.hpp"
 
 int Structure::getEdgeAmount(){
-    return edgeAmount;
+    return this->edgeAmount;
 }
 
-int Structure::getVertexAmount(){
-    return vertexAmount;
+int Structure::getVertexAmount() const{
+    return this->vertexAmount;
 }
 
 void Structure::helper_init(std::string line, bool isDirected) {
@@ -31,7 +31,7 @@ void Structure::helper_init(std::string line, bool isDirected) {
 void Structure::helper_initWeighted(std::string line, bool isDirected) {
     std::istringstream iss(line);
     int U, V;
-    double w;
+    float w;
     if (iss >> U >> V >> w){
         if (U < 1 || V < 1 || U > this->vertexAmount || V > this->vertexAmount) {
             throw std::out_of_range("Error! índex out of bounds");
@@ -45,11 +45,13 @@ void Structure::helper_initWeighted(std::string line, bool isDirected) {
         }
     }
     else {
-        throw std::invalid_argument("line must be 'int int double'");
+        throw std::invalid_argument("line must be 'int int float'");
     }
 }
 
 void Structure::initStruct(const std::string &path, bool isDirected, bool isWeighted) {
+    logMemoryUsage("Início de initStruct");
+
     if (isDirected){
         throw std::runtime_error("Error! Directed Graphs aren't currently supported");
     }
@@ -72,17 +74,18 @@ void Structure::initStruct(const std::string &path, bool isDirected, bool isWeig
         throw std::invalid_argument("invalid graph size, must be a single integer");
     }
 
-    this->resize(this->vertexAmount);
+    this->resize(this->getVertexAmount());
+    logMemoryUsage("Após redimensionar a estrutura");
 
     while (getline(graphFile, line)){
         if (!isWeighted){
             this->helper_init(line, isDirected);
         }
         else {
-            //throw std::logic_error("NÃO IMPLEMENTADO AINDA");
             this->helper_initWeighted(line, isDirected);
         }
     }
+    logMemoryUsage("Final de initStruct");
     graphFile.close();
 }
 

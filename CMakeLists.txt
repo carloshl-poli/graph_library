@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.10)
 project(GraphLibrary LANGUAGES CXX)
 
 # Definir o tipo de construção como Debug
-set(CMAKE_BUILD_TYPE Debug)  # Adicionada aqui
+# set(CMAKE_BUILD_TYPE Release)  # Adicionada aqui
 
 # Habilitar C++11
 set(CMAKE_CXX_STANDARD 20)
@@ -33,5 +33,5 @@ add_executable(graph_project ${SOURCES})
 
 # Linking com bibliotecas adicionais se necessário (Windows, por exemplo)
 if (WIN32)
-    target_link_libraries(graph_project ws2_32)  # exemplo: winsock no Windows
+    target_link_libraries(graph_project PRIVATE ws2_32 Psapi)  # exemplo: winsock no Windows
 endif()
