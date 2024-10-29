@@ -129,7 +129,7 @@ class Graph {
         ReturnGraphDataMap getBFSTree(int U);
         ReturnGraphDataMap  getDFSTree(int U);
         std::unordered_map<int, DijkstraNode> getDijkstraTree(int U, bool useHeap);
-        std::unordered_map<int, DijkstraNode> getDijkstraTree(int U);
+        std::unordered_map<int, DijkstraNode> getDijkstraTreeDefault(int U);
         ReturnGraphDataMap  getPrimmMST();
         ReturnGraphDataMap  getKruskalMST();
 

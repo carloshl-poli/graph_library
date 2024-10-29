@@ -320,44 +320,56 @@ std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTree(int U, bool 
     return dijkstraTree;
 }
 
-std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTree(int U) {
-    if (!hasWeight){
-        throw std::logic_error("Error! Cannot use dijkstra in weightless graph");
+std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTreeDefault(int U) {
+    if (!hasWeight) {
+        throw std::logic_error("Error! Cannot use Dijkstra in a weightless graph");
     }
+    
     double inf = std::numeric_limits<double>::max();
-    auto dist = initVertexMap(inf);
-    std::unordered_map<int, DijkstraNode> dijkstraTree;
-    std::unordered_set<int> S;
-    dist[U] = 0;
-
-    do {
-        int V;
-        double currentDist = inf;
-        for (V = 0; V <= this->getVertexAmount(); V++ ){
-            if (dist[V] < currentDist && S.find(V) == S.end()){
-                currentDist = dist[V];
+    auto dist = initVertexMap(inf);  // Initialize distances with infinity
+    std::unordered_map<int, DijkstraNode> dijkstraTree;  // Result tree
+    std::unordered_set<int> S;  // Set of processed nodes
+    
+    dist[U] = 0;  // Starting node has zero distance
+    
+    while (S.size() < this->getVertexAmount()) {
+        int V = -1;
+        double minDist = inf;
+        
+        // Select the node with the minimum distance that hasn’t been processed
+        for (int i = 1; i <= this->getVertexAmount(); i++) {
+            if (S.find(i) == S.end() && dist[i] < minDist) {
+                V = i;
+                minDist = dist[i];
             }
         }
-
-        if (currentDist == inf) break;
-        S.insert(V);
-        for (const auto& neighbor : this->structure->getAdjWeightedArray(V)){
+        // If no minimum node was found, the remaining vertices are unreachable
+        if (V == -1) break;
+        
+        S.insert(V);  // Mark this node as processed
+        // Relaxation step for all adjacent vertices of V
+        for (const auto& neighbor : this->structure->getAdjWeightedArray(V)) {
             int W = neighbor.first;
             double weight = neighbor.second;
-            if (weight < 0) throw std::logic_error("Support for negative weights is not yet available.");
-    
-            if (dist[W] > dist[V] + weight){
+            
+            if (weight < 0) {
+                throw std::logic_error("Support for negative weights is not yet available.");
+            }
+            
+            // Relax the edge if a shorter path is found
+            if (dist[W] > dist[V] + weight) {
                 dist[W] = dist[V] + weight;
                 dijkstraTree[W].distance = dist[W];
-                dijkstraTree[W].parent = V;
+                dijkstraTree[W].parent = V;  // Update Dijkstra tree with new parent and distance
             }
         }
-
-    } while (S.size() != this->getVertexAmount());
-    
+    }
+    std::cout << "\nDijkstra Tree (Vertex: [Distance, Parent]):" << std::endl;
+    for (const auto& [node, info] : dijkstraTree) {
+        std::cout << "Vertex " << node << ": [" << info.distance << ", Parent: " << info.parent << "]" << std::endl;
+    }
     return dijkstraTree;
 }
-
 
 /// @brief Calculate the Minimal distance between 2 vertices
 /// @param U is the first vertice
@@ -385,7 +397,7 @@ double Graph::getUVDistance(int U, int V, bool useHeap) {
         }
         
         else{
-            return getDijkstraTree(U).at(V).distance;
+            return getDijkstraTreeDefault(U).at(V).distance;
         }
     }
     catch (std::out_of_range &e){
@@ -399,7 +411,7 @@ std::stack<int> Graph::getPathUV(int U, int V, bool useHeap) {
     if (!hasWeight){
         throw std::logic_error("Weightless Graph doesn't have weighted Path");
     }
-    auto dijkstraTree = useHeap ? this->getDijkstraTree(U, useHeap) : this->getDijkstraTree(U);
+    auto dijkstraTree = useHeap ? this->getDijkstraTree(U, useHeap) : this->getDijkstraTreeDefault(U);
     if (dijkstraTree.find(V) != dijkstraTree.end()){
         parent = dijkstraTree[V].parent;
         path.push(V);
