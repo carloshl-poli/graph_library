@@ -1,3 +1,4 @@
+
 #include "graph.hpp"
 #include "adj_vector.hpp"
 #include "adj_matrix.hpp"
@@ -8,7 +9,7 @@
 #include <cstdlib>
 
 size_t currentMemoryUsage = 0;
-
+/*
 void* operator new(size_t size) {
     currentMemoryUsage += size;
     return malloc(size);
@@ -28,7 +29,6 @@ void logResults(const std::string& message) {
         std::cerr << "Unable to open log file." << std::endl;
     }
 }
-
 int main() {
     int graphNumber;
     std::cout << "Digite o número do grafo (1-6): ";
@@ -145,3 +145,156 @@ int main() {
 
     return 0;
 }
+
+
+*/
+int main(){
+    std::string graph_source_folder = "../test_subjects/";
+    std::string graph_file_name = "teste_peso.txt";
+    std::string file_path = graph_source_folder + graph_file_name;
+    Graph *graph = new Graph(file_path, GraphStructure::AdjVector, false, true);
+    std::cout << "Graph Initialized" << std::endl;
+    auto dist1_3 = graph->getUVDistance(1,3, true);
+    std::cout << "Distancia entre 1 e 3 deve ser 7: " << std::to_string(dist1_3) << std::endl;
+    return 0;
+}
+
+
+/*
+
+
+
+#include "pairing_heap.hpp"
+#include <iostream>
+#include <cassert>
+
+void testInsertAndFindMin() {
+    PairingHeap heap;
+    heap.insert(1, 10);
+    heap.insert(2, 5);
+    heap.insert(3, 20);
+
+    assert(heap.findMin() == 2);
+    std::cout << "Test Insert and FindMin Passed!" << std::endl;
+}
+
+void testDeleteMin() {
+    PairingHeap heap;
+    heap.insert(1, 10);
+    heap.insert(2, 5);
+    heap.insert(3, 20);
+
+    heap.deleteMin();
+    assert(heap.findMin() == 1);
+    
+    heap.deleteMin();
+    assert(heap.findMin() == 3);
+
+    heap.deleteMin();
+    assert(heap.isEmpty());
+    std::cout << "Test DeleteMin Passed!" << std::endl;
+}
+
+void testDecreaseKey() {
+    PairingHeap heap;
+    heap.insert(1, 10);
+    heap.insert(2, 5);
+    heap.insert(3, 20);
+    heap.insert(4, 15);
+
+    // Decrease key for vertex 3, which should now become the minimum
+    heap.decreaseKey(3, 2);
+    assert(heap.findMin() == 3);
+
+    // Further decrease the key for vertex 1
+    heap.decreaseKey(1, 1);
+    assert(heap.findMin() == 1);
+    std::cout << "Test DecreaseKey Passed!" << std::endl;
+}
+
+void testIsEmpty() {
+    PairingHeap heap;
+    assert(heap.isEmpty());
+
+    heap.insert(1, 10);
+    assert(!heap.isEmpty());
+
+    heap.deleteMin();
+    assert(heap.isEmpty());
+    std::cout << "Test IsEmpty Passed!" << std::endl;
+}
+
+void testClear() {
+    PairingHeap heap;
+    heap.insert(1, 10);
+    heap.insert(2, 5);
+    heap.insert(3, 20);
+
+    heap.clear();
+    assert(heap.isEmpty());
+    std::cout << "Test Clear Passed!" << std::endl;
+}
+
+int main() {
+    testInsertAndFindMin();
+    testDeleteMin();
+    testDecreaseKey();
+    testIsEmpty();
+    testClear();
+
+    std::cout << "All tests passed!" << std::endl;
+    return 0;
+}
+*/
+
+/*
+#include "graph.hpp"
+#include <iostream>
+#include <vector>
+#include <utility> // Para std::pair
+#include <stdexcept> // Para std::logic_error
+
+// Supondo que AdjVector e o método getAdjWeightedArray já estejam definidos.
+
+
+
+
+
+
+int main() {
+
+    std::string graph_source_folder = "../test_subjects/";
+    std::string graph_file_name = "teste_peso.txt";
+    std::string file_path = graph_source_folder + graph_file_name;
+    Graph *graph = new Graph(file_path, GraphStructure::AdjVector, false, true);
+    std::cout << "Graph Initialized" << std::endl;
+    int U;
+
+    while (true) {
+        std::cout << "Digite o índice do vértice (U) ou -1 para sair: ";
+        std::cin >> U;
+
+        // Condição de saída
+        if (U == -1) {
+            break;
+        }
+
+        try {
+            std::vector<std::pair<int, double>> adjList = graph->structure->getAdjWeightedArray(U);
+            
+            std::cout << "Vértices adjacentes e seus pesos:\n";
+            for (const auto& pair : adjList) {
+                std::cout << "Vértice: " << pair.first << ", Peso: " << pair.second << '\n';
+            }
+        } catch (const std::logic_error& e) {
+            std::cerr << "Erro: " << e.what() << '\n';
+        } catch (const std::exception& e) {
+            std::cerr << "Ocorreu um erro: " << e.what() << '\n';
+        }
+    }
+
+    std::cout << "Programa encerrado." << std::endl;
+    return 0;
+}
+
+*/

@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.10)
 # Nome do projeto
 project(GraphLibrary LANGUAGES CXX)
 
+# Definir o tipo de construção como Debug
+set(CMAKE_BUILD_TYPE Debug)  # Adicionada aqui
+
 # Habilitar C++11
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -22,6 +25,7 @@ endif()
 
 # Use file(GLOB ...) to get all .cpp files in the source directory
 file(GLOB SOURCES "src/*.cpp")  # Correção aqui
+
 
 # Adicionar os arquivos de origem ao projeto
 # add_executable(graph_project src/main.cpp src/graph.cpp)

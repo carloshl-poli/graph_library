@@ -44,8 +44,6 @@ class Structure {
          * in the string, as this will throw an error
          * 
          * @param isDirected A boolean that indicates if `Graph` is directed or not.
-         * 
-         * @todo Missing implementation.
          */
         void helper_initWeighted(std::string line, bool isDirected);
 
@@ -60,7 +58,7 @@ class Structure {
          */
         struct Data {
             int degree = 0;
-            std::string name;
+            
 
             Data() = default;
 

@@ -4,14 +4,23 @@
 #include <unordered_map>
 #include <limits>
 #include <iostream>
-
+#include <queue>
+#include <stack>
 struct HeapNode {
-    int value;  // Valor associado (distância, por exemplo)
+    double key;  // Valor associado (distância, por exemplo)
     int vertex; // Vértice associado
-    HeapNode* child;
-    HeapNode* sibling;
+    HeapNode *child, *foward, *back;
 
-    HeapNode(int val, int v) : value(val), vertex(v), child(nullptr), sibling(nullptr) {}
+    HeapNode() {
+        this->key = 0;
+        this->vertex = 0;
+        this->child = this->foward = this->back = nullptr;
+    }
+    HeapNode(double key, int vertex) {
+        this->key = key;
+        this->vertex = vertex;
+        this->child = this->foward = this->back = nullptr;
+    }
 };
 
 class PairingHeap {
@@ -19,29 +28,35 @@ private:
     HeapNode* root;  // Raiz do heap
     std::unordered_map<int, HeapNode*> heapMap;  // Mapeia os vértices para os nós do heap
 
-    // Função auxiliar para mesclar dois heaps
-    HeapNode* meld(HeapNode* a, HeapNode* b);
-
-    // Mescla todos os filhos de um nó
-    HeapNode* mergeSiblings(HeapNode* node);
+    HeapNode* first();
 
 public:
     PairingHeap();
+    PairingHeap(HeapNode *node);
 
     // Inserir um novo vértice com um valor
-    void insert(int vertex, int value);
+    void insert(int vertex, double key);
+
+    void merge(PairingHeap *ph);
+
+    
 
     // Retorna o vértice de menor valor (find-min)
     int findMin() const;
 
     // Remove o vértice de menor valor (delete-min)
+    HeapNode* extractMin();
+
     void deleteMin();
 
+
     // Diminui a chave de um vértice no heap
-    void decreaseKey(int vertex, int newValue);
+    void decreaseKey(int vertex, double newKey);
 
     // Verifica se o heap está vazio
     bool isEmpty() const;
+
+    void deleteAllNodes(HeapNode* node);
 
     // Limpa o heap e libera memória
     void clear();

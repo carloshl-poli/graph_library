@@ -20,7 +20,7 @@ void Structure::helper_init(std::string line, bool isDirected) {
         this->data[U].degree++;
         if (!isDirected){
             this->insertEdge(V,U);
-            this->data[U].degree++;
+            this->data[V].degree++;
         }
     }
     else {
@@ -38,12 +38,10 @@ void Structure::helper_initWeighted(std::string line, bool isDirected) {
         }
         this->insertEdge(U, V, w);
         this->edgeAmount++;
-        this->insertEdge(U,V);
-        this->edgeAmount++;
         this->data[U].degree++;
         if (!isDirected){
-            this->insertEdge(V,U);
-            this->data[U].degree++;
+            this->insertEdge(V, U, w);
+            this->data[V].degree++;
         }
     }
     else {
