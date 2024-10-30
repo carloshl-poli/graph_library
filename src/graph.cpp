@@ -259,67 +259,52 @@ std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTree(int U, bool 
         throw std::logic_error("Error! Cannot use dijkstra in weightless graph");
     }
 
-    std::cout << "Iniciando Dijkstra com o vértice inicial: " << U << std::endl;
-    PairingHeap heap;
-    std::unordered_map<int, double> dist;
-    std::unordered_map<int, DijkstraNode> dijkstraTree;
-    // Inicialização dos vértices e distâncias
-    for (int V = 1; V <= getVertexAmount(); V++) {
-        dist[V] = std::numeric_limits<double>::max();
-        heap.insert(V, dist[V]);
-        std::cout << "Inserido vértice " << V << " no heap com distância infinita (" << dist[V] << ")" << std::endl;
-    }
-    
+    // Priority queue for Dijkstra (min-heap), stores pairs of (distance, vertex)
+    using QueueElement = std::pair<double, int>;
+    static std::priority_queue<QueueElement, std::vector<QueueElement>, std::greater<QueueElement>> pq;
+    static std::vector<double> dist(getVertexAmount() + 1, std::numeric_limits<double>::max());
+    static std::unordered_map<int, DijkstraNode> dijkstraTree;
+
+    // Clear any data left from previous runs
+    dist.assign(getVertexAmount() + 1, std::numeric_limits<double>::max());
+    dijkstraTree.clear();
+    while (!pq.empty()) pq.pop();
+
+    // Initialization of vertices and distances
     dist[U] = 0;
     dijkstraTree[U].distance = 0;
     dijkstraTree[U].parent = -1;
-    heap.decreaseKey(U, 0);
-    std::cout << "Definindo vértice inicial " << U << " com distância 0 no heap" << std::endl;
+    pq.push({0, U});
 
-    while (!heap.isEmpty()) {
-        int V = heap.findMin();
-        std::cout << "Removendo vértice " << V << " do heap (distância atual: " << dist[V] << ")" << std::endl;
-        heap.deleteMin();
-        for (auto& neighbor : this->structure->getAdjWeightedArray(V)) {
-            std::cout << "Vértice " << neighbor.first << " é adjacente à " << V << std::endl;
-        }
+    while (!pq.empty()) {
+        double currentDist = pq.top().first;
+        int V = pq.top().second;
+        pq.pop();
+
+        // Ignore outdated entries in the priority queue
+        if (currentDist > dist[V]) continue;
 
         for (auto& neighbor : this->structure->getAdjWeightedArray(V)) {
             int W = neighbor.first;
             double weight = neighbor.second;
-            std::cout << "Verificando vizinho " << W << " de " << V << " com peso " << weight 
-                      << " (distância acumulada de " << V << ": " << dist[V] << ")" << std::endl;
 
             if (weight < 0) {
                 throw std::logic_error("Support for negative weights is not yet available.");
             }
 
-            // Verifica e atualiza a menor distância
+            // Update the shortest distance if found
             double newDist = dist[V] + weight;
             if (dist[W] > newDist) {
-                std::cout << "Atualizando distância do vértice " << W 
-                          << " (antiga: " << dist[W] << ", nova: " << newDist << ")" << std::endl;
                 dist[W] = newDist;
                 dijkstraTree[W].distance = newDist;
                 dijkstraTree[W].parent = V;
-                heap.decreaseKey(W, newDist);
-                std::cout << "Chave do vértice " << W << " no heap reduzida para " << newDist << std::endl;
-            } else {
-                std::cout << "Nenhuma atualização para o vértice " << W 
-                          << " (distância atual: " << dist[W] << ", possível nova distância: " << newDist << ")" << std::endl;
+                pq.push({newDist, W});
             }
         }
     }
 
-    std::cout << "Dijkstra completo. Distâncias finais:" << std::endl;
-    for (const auto& pair : dijkstraTree) {
-        std::cout << "Vértice: " << pair.first << ", Distância: " << pair.second.distance 
-                  << ", Pai: " << pair.second.parent << std::endl;
-    }
-
-    return dijkstraTree;
+    return std::move(dijkstraTree);
 }
-
 std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTreeDefault(int U) {
     if (!hasWeight) {
         throw std::logic_error("Error! Cannot use Dijkstra in a weightless graph");
@@ -364,10 +349,10 @@ std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTreeDefault(int U
             }
         }
     }
-    std::cout << "\nDijkstra Tree (Vertex: [Distance, Parent]):" << std::endl;
-    for (const auto& [node, info] : dijkstraTree) {
-        std::cout << "Vertex " << node << ": [" << info.distance << ", Parent: " << info.parent << "]" << std::endl;
-    }
+    //std::cout << "\nDijkstra Tree (Vertex: [Distance, Parent]):" << std::endl;
+    //for (const auto& [node, info] : dijkstraTree) {
+    //    std::cout << "Vertex " << node << ": [" << info.distance << ", Parent: " << info.parent << "]" << std::endl;
+    //}
     return dijkstraTree;
 }
 
