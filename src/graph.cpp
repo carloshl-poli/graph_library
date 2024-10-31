@@ -42,7 +42,7 @@ Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool 
 }
 
 Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted, std::string &names) {
-    helper_init(path, structure, isDirected, isWeighted);
+    Graph(path, structure, isDirected, isWeighted);
     this->named = true;
 
     std::string line;
