@@ -79,7 +79,6 @@ void Structure::initStruct(const std::string &path, bool isDirected, bool isWeig
             this->helper_init(line, isDirected);
         }
         else {
-            //throw std::logic_error("NÃO IMPLEMENTADO AINDA");
             this->helper_initWeighted(line, isDirected);
         }
     }
