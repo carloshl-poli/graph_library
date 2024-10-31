@@ -1,4 +1,8 @@
 #include "graph.hpp"
+#include <unordered_map>
+#include <bitset>
+#include <limits>
+#include <stdexcept>
 
 std::pair<std::string, int> extractNumberName(const std::string& numberName){
     size_t pos = numberName.find(',');
@@ -268,54 +272,55 @@ std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTree(int U, bool 
 
     return std::move(dijkstraTree);
 }
+
 std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTreeDefault(int U) {
     if (!hasWeight) {
         throw std::logic_error("Error! Cannot use Dijkstra in a weightless graph");
     }
-    
+
     double inf = std::numeric_limits<double>::max();
-    auto dist = initVertexMap(inf);  // Initialize distances with infinity
-    std::unordered_map<int, DijkstraNode> dijkstraTree;  // Result tree
-    std::unordered_set<int> S;  // Set of processed nodes
-    
-    dist[U] = 0;  // Starting node has zero distance
-    
-    while (S.size() < this->getVertexAmount()) {
+    std::unordered_map<int, DijkstraNode> dijkstraTree;
+    std::bitset<10000000> S;  // Bitset for tracking processed nodes (up to 10 million nodes)
+
+    // Initialize the starting node distance
+    dijkstraTree[U].distance = 0;
+    dijkstraTree[U].parent = -1;
+
+    while (S.count() < this->getVertexAmount()) {
         int V = -1;
         double minDist = inf;
-        
-        // Select the node with the minimum distance that hasn’t been processed
-        for (int i = 1; i <= this->getVertexAmount(); i++) {
-            if (S.find(i) == S.end() && dist[i] < minDist) {
-                V = i;
-                minDist = dist[i];
+
+        // Select the unprocessed node with the minimum distance
+        for (const auto& [node, data] : dijkstraTree) {
+            if (!S[node] && data.distance < minDist) {
+                V = node;
+                minDist = data.distance;
             }
         }
+
         // If no minimum node was found, the remaining vertices are unreachable
         if (V == -1) break;
-        
-        S.insert(V);  // Mark this node as processed
+
+        S.set(V);  // Mark this node as processed
+
         // Relaxation step for all adjacent vertices of V
         for (const auto& neighbor : this->structure->getAdjWeightedArray(V)) {
             int W = neighbor.first;
             double weight = neighbor.second;
-            
+
             if (weight < 0) {
                 throw std::logic_error("Support for negative weights is not yet available.");
             }
-            
+
             // Relax the edge if a shorter path is found
-            if (dist[W] > dist[V] + weight) {
-                dist[W] = dist[V] + weight;
-                dijkstraTree[W].distance = dist[W];
-                dijkstraTree[W].parent = V;  // Update Dijkstra tree with new parent and distance
+            double newDist = dijkstraTree[V].distance + weight;
+            if (!dijkstraTree.count(W) || dijkstraTree[W].distance > newDist) {
+                dijkstraTree[W].distance = newDist;
+                dijkstraTree[W].parent = V;
             }
         }
     }
-    //std::cout << "\nDijkstra Tree (Vertex: [Distance, Parent]):" << std::endl;
-    //for (const auto& [node, info] : dijkstraTree) {
-    //    std::cout << "Vertex " << node << ": [" << info.distance << ", Parent: " << info.parent << "]" << std::endl;
-    //}
+
     return dijkstraTree;
 }
 
