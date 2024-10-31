@@ -1,12 +1,13 @@
 # Ignorar diretório de build
 build/
-
+output/
 # Ignorar arquivos de saída de compilação
 *.o
 *.exe
 *.out
 
 # Ignorar arquivos temporários de IDEs
+
 .vscode/
 *.user
 *.sublime-workspace

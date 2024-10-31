@@ -60,7 +60,8 @@ class Graph {
             }
         };
 
-        std::unordered_map<int, std::string> nameMap;
+        std::unordered_map<std::string, int> labelToVertexMap;
+        std::unordered_map<int, std::string> vertexToLabelMap;
 
         void helper_init(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted);
 
@@ -71,7 +72,7 @@ class Graph {
         int vertexAmount;
         bool directed;
         bool hasWeight;
-        
+        bool named;
         int edgeAmount;
 
         struct Data{
@@ -141,6 +142,9 @@ class Graph {
         //Graph Basic Measure Methods
         int getUVDistance(int U, int V);
         double getUVDistance(int U, int V, bool useHeap);
+        double getDijkstraMinDistance(int U, int V, bool useHeap);
+        double getDijkstraMinDistance(std::unordered_map<int, DijkstraNode> &dijkstraTree, int V);
+        
         
         int getApproxDiameter();
         int getExactDiameter();
@@ -150,19 +154,24 @@ class Graph {
         int getVertexAmount();
         int getEdgeAmount();
         std::stack<int> getPathUV(int U, int V, bool useHeap);
+        
+        std::queue<std::string> getNamedPathUV(std::string name1, std::string name2);
+
+        int getVertexByLabel(std::string name);
+        std::string getLabelByVertex(int vertex);
+
+        std::deque<int> getDijkstraMinPathVertices(int U, int V, bool useHeap);
+        std::deque<int> getDijkstraMinPathVertices(int U, int V, std::unordered_map<int, DijkstraNode> &dijkstraTree);
+
+        std::deque<std::string> getDijkstraMinPathLabels(std::string labelU, std::string labelV, bool useHeap);
+        std::deque<std::string> getDijkstraMinPathLabels(std::string labelU, std::string labelV, std::unordered_map<int, DijkstraNode> &dijkstraTree);
+
+        //std::unordered_map<int, DijkstraNode> getDijkstraTree(int U, bool useHeap, bool StopBeforeConditionMet, int V);
+        
 
         //Templates
 
-        template <typename T>
-        std::vector<T> getNamedPath(int U, int V, bool useHeap){
-            std::vector<T> namedPath;
-            auto path = this->getPathUV(U, V, useHeap);
-            while (!path.empty()) {
-                namedPath.emplace_back(nameMap[path.top()]);
-                path.pop();
-            }
-            return namedPath;
-        }
+
 
         
 

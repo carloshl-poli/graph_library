@@ -1,6 +1,6 @@
 #include "graph.hpp"
 
-std::pair<int, std::string> extractNumberName(const std::string& numberName){
+std::pair<std::string, int> extractNumberName(const std::string& numberName){
     size_t pos = numberName.find(',');
     int number;
     std::string name;
@@ -11,7 +11,7 @@ std::pair<int, std::string> extractNumberName(const std::string& numberName){
     name = numberName.substr(pos + 1);
     
     
-    return std::make_pair(number, name);
+    return std::make_pair(name, number);
 }
 
 
@@ -33,22 +33,25 @@ Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool 
     this->vertexAmount = this->structure->getVertexAmount();
     this->edgeAmount = this->structure->getEdgeAmount();
     this->hasWeight = this->structure->hasWeight();
+    this->named = false;
 
 }
 
 Graph::Graph(std::string &path, GraphStructure structure, bool isDirected, bool isWeighted, std::string &names) {
     helper_init(path, structure, isDirected, isWeighted);
+    this->named = true;
 
     std::string line;
-    std::ifstream namesFile(names);
+    std::ifstream labelsFile(names);
 
-    if (!namesFile.is_open()){
-        throw std::runtime_error("Error! Couldn't open names file");
+    if (!labelsFile.is_open()){
+        throw std::runtime_error("Error! Couldn't open label file");
     }
 
-    while (getline(namesFile, line)){
+    while (getline(labelsFile, line)){
         auto name = extractNumberName(line);
-        this->nameMap[name.first] = name.second;
+        this->labelToVertexMap[name.first] = name.second;
+        this->vertexToLabelMap[name.second] = name.first;
     }
 
 }
@@ -210,53 +213,13 @@ Graph::ReturnGraphDataMap Graph::getDFSTree(int U) {
 
     return dfsTree;
 }
-/*
-std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTree(int U, bool useHeap) {
-    if (!hasWeight){
-        throw std::logic_error("Error! Cannot use dijkstra in weightless graph");
-    }
-
-    PairingHeap heap;
-    std::unordered_map<int, double> dist;
-    std::unordered_map<int, DijkstraNode> dijkstraTree;
-
-    for (int V = 1; V <= getVertexAmount(); V++){
-        dist[V] = std::numeric_limits<double>::max();
-        heap.insert(V, dist[V]);
-    }
-    
-    dist[U] = 0;
-    dijkstraTree[U].distance = 0;
-    dijkstraTree[U].parent = -1;
-    heap.decreaseKey(U, 0);
-    
-    while (!heap.isEmpty()){
-        int V = heap.findMin();
-        heap.deleteMin();
-
-        for (auto& neighbor : this->structure->getAdjWeightedArray(V)){
-            int W = neighbor.first;
-            int weight = neighbor.second;
-            if (weight < 0){
-                throw std::logic_error("Support for negative weights is not yet available.");
-            }
-
-            if (dist[W] > dist[V] + weight){
-                dist[W] = dist[V] + weight;
-                dijkstraTree[W].distance = dist[W];
-                dijkstraTree[W].parent = V;
-                heap.decreaseKey(W, dist[W]);
-            }
-        }
-    }
-
-    return dijkstraTree;
-}
-*/
 
 std::unordered_map<int, Graph::DijkstraNode> Graph::getDijkstraTree(int U, bool useHeap) {
     if (!hasWeight) {
         throw std::logic_error("Error! Cannot use dijkstra in weightless graph");
+    }
+    else if (!useHeap) {
+        return this->getDijkstraTreeDefault(U);
     }
 
     // Priority queue for Dijkstra (min-heap), stores pairs of (distance, vertex)
@@ -390,6 +353,27 @@ double Graph::getUVDistance(int U, int V, bool useHeap) {
     }
 }
 
+double Graph::getDijkstraMinDistance(int U, int V, bool useHeap) {
+    if (!hasWeight){
+        throw std::logic_error("Cant measure weight distance in weightless graph");
+    }
+
+    auto dijkstraTree = getDijkstraTree(U, useHeap);
+    return getDijkstraMinDistance(dijkstraTree, V);
+    
+}
+
+double Graph::getDijkstraMinDistance(std::unordered_map<int, DijkstraNode> &dijkstraTree, int V) {
+    if (!hasWeight){
+        throw std::logic_error("Cant measure weight distance in weightless graph");
+    }
+
+    if (dijkstraTree.find(V) != dijkstraTree.end()) {
+        return dijkstraTree[V].distance;
+    }
+    return std::numeric_limits<double>::max();
+}
+
 std::stack<int> Graph::getPathUV(int U, int V, bool useHeap) {
     std::stack<int> path;
     int parent;
@@ -408,6 +392,98 @@ std::stack<int> Graph::getPathUV(int U, int V, bool useHeap) {
     }
     return path;
     
+}
+
+std::queue<std::string> Graph::getNamedPathUV(std::string name1, std::string name2) {
+    int vertex1 = getVertexByLabel(name1);
+    int vertex2 = getVertexByLabel(name2);
+    auto path = this->getPathUV(vertex1, vertex2, true);
+    std::queue<std::string> nameQueue;
+    while (!path.empty()) {
+        auto number = path.top();
+        path.pop();
+        nameQueue.push(this->getLabelByVertex(number));
+    }
+    return nameQueue;
+
+}
+
+int Graph::getVertexByLabel(std::string name) {
+    if (!this->named) {
+        throw std::logic_error("Error! Graph has no names");
+    }
+    if (this->labelToVertexMap.find(name) == labelToVertexMap.end()) {
+        throw std::out_of_range("Name not in graph");
+    }
+    return labelToVertexMap[name];
+}
+
+std::string Graph::getLabelByVertex(int vertex) {
+    if (!this->named) {
+        throw std::logic_error("Error! Graph has no names");
+    }
+    if (this->vertexToLabelMap.find(vertex) == vertexToLabelMap.end()) {
+        throw std::out_of_range("Vertex not in graph");
+    }
+    return vertexToLabelMap[vertex];
+}
+
+std::deque<int> Graph::getDijkstraMinPathVertices(int U, int V, bool useHeap) {
+    if (!hasWeight){
+        throw std::logic_error("Weightless Graph doesn't have weighted Path");
+    }
+    auto dijkstraTree = useHeap ? this->getDijkstraTree(U, useHeap) : this->getDijkstraTreeDefault(U);
+    return this->getDijkstraMinPathVertices(U, V, dijkstraTree);
+}
+
+std::deque<int> Graph::getDijkstraMinPathVertices(int U, int V, std::unordered_map<int, DijkstraNode> &dijkstraTree) {
+    if (!hasWeight){
+        throw std::logic_error("Weightless Graph doesn't have weighted Path");
+    }
+    std::deque<int> path;
+    int parent;
+    if (dijkstraTree.find(V) != dijkstraTree.end()){
+        parent = dijkstraTree[V].parent;
+        path.push_back(V);
+        while (parent != U){
+            path.push_back(parent);
+            parent = dijkstraTree[parent].parent;
+        }
+        path.push_back(U);
+    }
+    return path;
+}
+
+std::deque<std::string> Graph::getDijkstraMinPathLabels(std::string labelU, std::string labelV, bool useHeap) {
+    if (!hasWeight){
+        throw std::logic_error("Weightless Graph doesn't have weighted Path");
+    }
+    int U = getVertexByLabel(labelU);
+    int V = getVertexByLabel(labelV);
+    auto dijkstraTree = useHeap ? this->getDijkstraTree(U, useHeap) : this->getDijkstraTreeDefault(U);
+    return this->getDijkstraMinPathLabels(labelU, labelV, dijkstraTree);
+
+}
+
+std::deque<std::string> Graph::getDijkstraMinPathLabels(std::string labelU, std::string labelV, std::unordered_map<int, DijkstraNode> &dijkstraTree) {
+    if (!hasWeight){
+        throw std::logic_error("Weightless Graph doesn't have weighted Path");
+    }
+    int U = getVertexByLabel(labelU);
+    int V = getVertexByLabel(labelV);
+    std::deque<std::string> path;
+    int parent;
+    if (dijkstraTree.find(V) != dijkstraTree.end()){
+        parent = dijkstraTree[V].parent;
+        
+        path.push_back(this->getLabelByVertex(V));
+        while (parent != U){
+            path.push_back(this->getLabelByVertex(parent));
+            parent = dijkstraTree[parent].parent;
+        }
+        path.push_back(this->getLabelByVertex(U));
+    }
+    return path;
 }
 
 int Graph::getExactDiameter(){

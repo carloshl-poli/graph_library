@@ -26,7 +26,9 @@ int AdjVector::getEdgeUV(int U, int V){
 }
 
 bool AdjVector::hasEdgeUV(int U, int V) {
+    
     int index;
+    
     try
     {
         index = this->getEdgeUV(U,V);
@@ -40,8 +42,17 @@ bool AdjVector::hasEdgeUV(int U, int V) {
     
 
 double AdjVector::getWeightUV(int U, int V){
-    int v = this->getEdgeUV(U,V);
-    return this->body[U-1][v].second;
+    if (!isWeighted){
+        throw std::logic_error("This Graph is weightless");
+    }
+    else if (this->hasEdgeUV(U, V)){
+        int v = this->getEdgeUV(U,V);
+        return this->body[U-1][v].second;
+    }
+    else {
+        throw std::invalid_argument("Error: There is no edge between vertices "
+            + std::to_string(V) + " and " + std::to_string(U) + ".");
+    }
 }
 
 std::vector<int> AdjVector::getAdjArray(int U) {
@@ -59,12 +70,4 @@ std::vector<std::pair<int, double>> AdjVector::getAdjWeightedArray(int U) {
     }
     int u = U - 1;
     return this->body[u];
-
-
-    /*
-    std::vector<std::pair<int, double>> weightedArray;
-    for (const auto& pair : this->body[u]) {
-            weightedArray.push_back({pair.first, pair.second});
-    }
-    */
 }

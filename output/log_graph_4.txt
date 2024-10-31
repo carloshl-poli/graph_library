@@ -1,0 +1,2 @@
+Starting study of Shortest Path Between Vertices and 10 for graph 4
+Graph 4 Initialized

@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.10)
 project(GraphLibrary LANGUAGES CXX)
 
 # Definir o tipo de construção como Debug
-set(CMAKE_BUILD_TYPE Debug)  # Adicionada aqui
+#set(CMAKE_BUILD_TYPE Debug)  # Adicionada aqui
 
 # Habilitar C++11
 set(CMAKE_CXX_STANDARD 20)

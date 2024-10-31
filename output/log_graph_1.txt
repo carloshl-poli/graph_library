@@ -1,0 +1,17 @@
+Starting study of Shortest Path Between Vertices and 10 for graph 1
+Graph 1 Initialized
+Distance between 10 and 20 in graph 1 is 2.38
+Path between 10 and 20 is: 10 -> 2038 -> 5094 -> 2875 -> 4746 -> 8892 -> 3578 -> 2502 -> 4627 -> 4252 -> 9853 -> 9285 -> 1034 -> 20
+
+Distance between 10 and 30 in graph 1 is 1.72
+Path between 10 and 30 is: 10 -> 2038 -> 2658 -> 682 -> 4045 -> 30
+
+Distance between 10 and 40 in graph 1 is 2.05
+Path between 10 and 40 is: 10 -> 2038 -> 2658 -> 682 -> 5941 -> 6759 -> 2195 -> 1223 -> 40
+
+Distance between 10 and 50 in graph 1 is 1.2
+Path between 10 and 50 is: 10 -> 2038 -> 7521 -> 2258 -> 3235 -> 8078 -> 2532 -> 2527 -> 50
+
+Distance between 10 and 60 in graph 1 is 1.66
+Path between 10 and 60 is: 10 -> 2038 -> 5094 -> 2875 -> 3598 -> 1268 -> 4333 -> 3383 -> 8182 -> 4328 -> 9082 -> 60
+

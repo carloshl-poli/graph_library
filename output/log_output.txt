@@ -1,0 +1,14 @@
+Graph 1 Initialized
+Calculating mean time of dijkstra with heap
+Graph 1 mean Dijkstra = 0.0718931
+Graph 1 Finished
+Graph 2 Initialized
+Calculating mean time of dijkstra with heap
+Graph 2 mean Dijkstra = 0.240095
+Graph 2 Finished
+Graph 3 Initialized
+Calculating mean time of dijkstra with heap
+Graph 3 mean Dijkstra = 1.53357
+Graph 3 Finished
+Graph 4 Initialized
+Calculating mean time of dijkstra with heap
