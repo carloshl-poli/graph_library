@@ -58,3 +58,7 @@ std::vector<std::pair<int, double>> AdjMatrix::getAdjWeightedArray(int U) {
 
     return adjWeightedArray;
 }
+
+std::string AdjMatrix::getType() {
+    return "AdjMatrix";
+}

@@ -108,6 +108,8 @@ class AdjMatrix : public Structure {
          */
         std::vector<std::pair<int, double>> getAdjWeightedArray(int U) override;
 
+        std::string getType();
+
 };
 
 

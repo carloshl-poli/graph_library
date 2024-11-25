@@ -10,10 +10,23 @@
 #include <utility>
 #include <stdexcept>
 #include <optional>
+#include <unordered_map>
 
-class AdjVector : public Structure
-{
+class AdjVector : public Structure {
+    public:
+        struct NodeBase {
+            int origin;
+            double weight;
+            int to;
+            size_t id;
+
+            NodeBase(int origin, double weight, int to, size_t id) : origin(origin), weight(weight), to(to), id(id) {}
+        };
+
+        size_t id_counter;
+        
     private:
+<<<<<<< HEAD
 
         /**
          * @brief The body of the structure representation.
@@ -29,6 +42,11 @@ class AdjVector : public Structure
          * 
          */
         std::vector<std::vector<std::pair<int, double>>> body;
+=======
+        std::vector<std::vector<NodeBase>> body;
+        //std::vector<std::vector<std::pair<int, double>>> body;
+        
+>>>>>>> dijkstra
 
         /**
          * @brief Gets the location of the vertice V in the adjacency vector of U.
@@ -54,6 +72,7 @@ class AdjVector : public Structure
          */
         void resize(int size) override;
 
+<<<<<<< HEAD
         /**
          * @brief Insert the edge (u,v) in the body with weight w
          * 
@@ -75,12 +94,21 @@ class AdjVector : public Structure
          * @param isWeighted 
          * @param isDirected 
          */
+=======
+        void insertEdge(int U, int V, double w) override;
+        size_t insertEdge(int U, int V, double W, bool getID);
+
+    public:
+        AdjVector(size_t size, bool isWeighted);
+>>>>>>> dijkstra
         AdjVector(const std::string &path, bool isWeighted, bool isDirected = false);
 
         /**
          * @brief Default destructor
          */
         ~AdjVector () = default;
+        friend class FlowGraph;
+
 
         /**
          * @brief Verifies if exist an edge that incides U and V.
@@ -135,6 +163,11 @@ class AdjVector : public Structure
          * @return 
          */
         std::vector<std::pair<int, double>> getAdjWeightedArray(int U) override;
+        std::string getType();
+
+        std::vector<NodeBase> getAdjNodeArray(int U);
+
+    
 };
 
 

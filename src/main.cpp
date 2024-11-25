@@ -1,5 +1,6 @@
 
 #include "graph.hpp"
+#include "flow_graph.hpp"
 #include "adj_vector.hpp"
 #include "adj_matrix.hpp"
 #include "structure_base.hpp"
@@ -37,8 +38,6 @@ void studyCaseShortestPathBetweenVerticesGraphOLD(){
         std::cout << std::endl;
     }
 }
-
-#include <fstream>
 
 void studyCaseShortestPathBetweenVerticesGraph(int graph_number) {
     // Define o caminho do log
@@ -217,7 +216,156 @@ void studyCaseCollaborationPathWithDijkstra() {
     log_file.close();
 }
 
+
+void testCaseResidualGraphInitializer() {
+    // Define o caminho do log
+    std::string log_source_folder = "../output/";
+    std::string log_file_name = "log_graph_test.txt";
+    std::string log_file_path = log_source_folder + log_file_name;
+    
+    // Abre o arquivo de log para escrita
+    std::ofstream log_file(log_file_path);
+    if (!log_file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de log em " << log_file_path << std::endl;
+        return;
+    }
+
+    // Caminho do arquivo do grafo
+    std::string graph_source_folder = "../test_subjects/";
+    std::string graph_file_name = "grafo_" + std::to_string(1) + ".txt";
+    std::string file_path = graph_source_folder + graph_file_name;
+
+    // Supondo que FlowGraph já tenha sido definido e está sendo utilizado aqui
+    FlowGraph* graph = new FlowGraph(file_path, true, true);
+
+    // Inicializa o mapa de arestas residuais
+    std::unordered_map<size_t, FlowGraph::ResidualEdge> ResidualEdgeMap;
+    graph->initResidualStructure(ResidualEdgeMap);
+
+    // Imprime os elementos no console e no arquivo de log
+    for (const auto& entry : ResidualEdgeMap) {
+        const FlowGraph::ResidualEdge& edge = entry.second;
+
+        // Imprimindo no console
+        std::cout << "ID: " << edge.id 
+                  << ", OriginalEdge: " << edge.originalEdge 
+                  << ", Origin: " << edge.origin 
+                  << ", Destiny: " << edge.destiny 
+                  << ", Capacity: " << edge.capacity << std::endl;
+
+        // Escrevendo no arquivo de log
+        log_file << "ID: " << edge.id
+                 << ", OriginalEdge: " << edge.originalEdge
+                 << ", Origin: " << edge.origin
+                 << ", Destiny: " << edge.destiny
+                 << ", Capacity: " << edge.capacity << std::endl;
+    }
+
+    // Fecha o arquivo de log
+    log_file.close();
+}
+
+// Supondo que FlowGraph e ResidualEdge estejam corretamente definidos
+/*
+void printAugmentingPath(int source, int target, int minCapacity) {
+    // Define o caminho do log
+    std::string log_source_folder = "../output/";
+    std::string log_file_name = "log_graph_test.txt";
+    std::string log_file_path = log_source_folder + log_file_name;
+    
+    // Abre o arquivo de log para escrita
+    std::ofstream log_file(log_file_path);
+    if (!log_file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de log em " << log_file_path << std::endl;
+        return;
+    }
+
+    // Caminho do arquivo do grafo
+    std::string graph_source_folder = "../test_subjects/";
+    std::string graph_file_name = "grafo_" + std::to_string(1) + ".txt";
+    std::string file_path = graph_source_folder + graph_file_name;
+
+    // Supondo que FlowGraph já tenha sido definido e está sendo utilizado aqui
+    FlowGraph* graph = new FlowGraph(file_path, true, true);
+    std::unordered_map<size_t, FlowGraph::ResidualEdge> ResidualEdgeMap;
+    auto residualStructure = graph->initResidualStructure(ResidualEdgeMap);
+    std::cout << "Grafo criado." << std::endl;
+    
+    // Chama o método findAugmentingPath para obter o caminho de aumento
+    std::stack<FlowGraph::ResidualEdge> augmentingPath = graph->findAugmentingPath(source, target, minCapacity, ResidualEdgeMap, residualStructure);
+
+    // Verifica se o caminho de aumento foi encontrado
+    if (augmentingPath.empty()) {
+        std::cout << "Nenhum caminho de aumento encontrado." << std::endl;
+        log_file << "Nenhum caminho de aumento encontrado." << std::endl;
+    } else {
+        std::cout << "Caminho de aumento encontrado: " << std::endl;
+        log_file << "Caminho de aumento encontrado: " << std::endl;
+
+        // Itera sobre o stack e imprime as arestas do caminho
+        while (!augmentingPath.empty()) {
+            const FlowGraph::ResidualEdge& edge = augmentingPath.top();
+            augmentingPath.pop();
+
+            // Imprimindo no console
+            std::cout << "ID: " << edge.id 
+                      << ", OriginalEdge: " << edge.originalEdge 
+                      << ", Origin: " << edge.origin 
+                      << ", Destiny: " << edge.destiny 
+                      << ", Capacity: " << edge.capacity << std::endl;
+
+            // Escrevendo no arquivo de log
+            log_file << "ID: " << edge.id
+                     << ", OriginalEdge: " << edge.originalEdge
+                     << ", Origin: " << edge.origin
+                     << ", Destiny: " << edge.destiny
+                     << ", Capacity: " << edge.capacity << std::endl;
+        }
+    }
+
+    // Fecha o arquivo de log
+    log_file.close();
+}
+
+*/
+
+void testCaseCalculateMaxFlow(const int source, const int target) {
+    // Define o caminho do log
+    std::string log_source_folder = "../output/";
+    std::string log_file_name = "log_graph_test.txt";
+    std::string log_file_path = log_source_folder + log_file_name;
+    
+    // Abre o arquivo de log para escrita
+    std::ofstream log_file(log_file_path);
+    if (!log_file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de log em " << log_file_path << std::endl;
+        return;
+    }
+
+    // Caminho do arquivo do grafo
+    std::string graph_source_folder = "../test_subjects/";
+    std::string graph_file_name = "grafo_rf_" + std::to_string(4) + ".txt";
+    std::string file_path = graph_source_folder + graph_file_name;
+
+    // Supondo que FlowGraph já tenha sido definido e está sendo utilizado aqui
+    FlowGraph* graph = new FlowGraph(file_path, true, true);
+    int maxFlow = graph->calculateMaxFlow(source, target);
+    std::cout << "Fluxo máximo no grafo é: " << maxFlow << std::endl;
+    log_file << "Fluxo máximo no grafo é: " << maxFlow << std::endl;
+    log_file.close();
+}
+
 int main(){
-    studyCaseShortestPathBetweenVerticesGraph(4);
+
+    testCaseCalculateMaxFlow(1,2);
     return 0;
 }
+
+/*
+Lendo grafo do arquivo: grafo_rf_1.txt
+Fluxo máximo entre 1 e 2 no grafo grafo_rf_1.txt: 1058
+Lendo grafo do arquivo: grafo_rf_2.txt
+Fluxo máximo entre 1 e 2 no grafo grafo_rf_2.txt: 11189
+Lendo grafo do arquivo: grafo_rf_3.txt
+Fluxo máximo entre 1 e 2 no grafo grafo_rf_3.txt: 2964
+*/
