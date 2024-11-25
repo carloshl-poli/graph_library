@@ -47,6 +47,7 @@ class Structure {
          */
         void helper_initWeighted(std::string line, bool isDirected);
 
+
         
 
     protected:
@@ -120,6 +121,8 @@ class Structure {
          * Derived classes should call this constructor.
          */
         Structure() = default;
+
+
 
     public:
 
@@ -227,6 +230,8 @@ class Structure {
          * @return The amount of edges in `Graph`
          */
         int getEdgeAmount();
+
+        virtual std::string getType() = 0;
 
         
     

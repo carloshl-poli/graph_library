@@ -50,9 +50,6 @@ void Structure::helper_initWeighted(std::string line, bool isDirected) {
 }
 
 void Structure::initStruct(const std::string &path, bool isDirected, bool isWeighted) {
-    if (isDirected){
-        throw std::runtime_error("Error! Directed Graphs aren't currently supported");
-    }
 
     std::string line;
     std::ifstream graphFile(path);
@@ -79,7 +76,6 @@ void Structure::initStruct(const std::string &path, bool isDirected, bool isWeig
             this->helper_init(line, isDirected);
         }
         else {
-            //throw std::logic_error("NÃO IMPLEMENTADO AINDA");
             this->helper_initWeighted(line, isDirected);
         }
     }
@@ -99,5 +95,4 @@ int Structure::getUDegree(int U) {
 bool Structure::hasWeight() {
     return isWeighted;
 }
-
 
