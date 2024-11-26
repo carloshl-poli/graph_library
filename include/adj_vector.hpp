@@ -26,27 +26,9 @@ class AdjVector : public Structure {
         size_t id_counter;
         
     private:
-<<<<<<< HEAD
-
-        /**
-         * @brief The body of the structure representation.
-         * 
-         * Basically consists of a Vector of pointers to a vector of adjacency.
-         * Each index of the vector represents a vertex of the graph.
-         * Since the graph is 1-indexation, the index of the graph in the vector
-         * of pointers is the vertice value minus 1.
-         * 
-         * Each element of the vector of adjacency is a std::pair<int, double>,
-         * in which the first is the value of the vertex (not the index) and
-         * the second represents the weight of the edge between them.
-         * 
-         */
-        std::vector<std::vector<std::pair<int, double>>> body;
-=======
         std::vector<std::vector<NodeBase>> body;
         //std::vector<std::vector<std::pair<int, double>>> body;
         
->>>>>>> dijkstra
 
         /**
          * @brief Gets the location of the vertice V in the adjacency vector of U.
@@ -72,35 +54,11 @@ class AdjVector : public Structure {
          */
         void resize(int size) override;
 
-<<<<<<< HEAD
-        /**
-         * @brief Insert the edge (u,v) in the body with weight w
-         * 
-         * @param u 
-         * @param V 
-         * @param w 
-         */
-        void insertEdge(int u,int V,double w) override;
-
-    public:
-
-        /**
-         * @brief The constructor of the class
-         * 
-         * Since the construction of the structure lies with the method initStruct of its base class,
-         * this method just call initStruct with the param it receives.
-         * 
-         * @param path 
-         * @param isWeighted 
-         * @param isDirected 
-         */
-=======
         void insertEdge(int U, int V, double w) override;
         size_t insertEdge(int U, int V, double W, bool getID);
 
     public:
         AdjVector(size_t size, bool isWeighted);
->>>>>>> dijkstra
         AdjVector(const std::string &path, bool isWeighted, bool isDirected = false);
 
         /**

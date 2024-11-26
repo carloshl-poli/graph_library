@@ -329,7 +329,7 @@ void printAugmentingPath(int source, int target, int minCapacity) {
 
 */
 
-void testCaseCalculateMaxFlow(const int source, const int target) {
+void testCaseCalculateMaxFlow(const int source, const int target, const int graph_number) {
     // Define o caminho do log
     std::string log_source_folder = "../output/";
     std::string log_file_name = "log_graph_test.txt";
@@ -344,20 +344,43 @@ void testCaseCalculateMaxFlow(const int source, const int target) {
 
     // Caminho do arquivo do grafo
     std::string graph_source_folder = "../test_subjects/";
-    std::string graph_file_name = "grafo_rf_" + std::to_string(4) + ".txt";
+    std::string graph_file_name = "grafo_rf_" + std::to_string(graph_number) + ".txt";
     std::string file_path = graph_source_folder + graph_file_name;
 
-    // Supondo que FlowGraph já tenha sido definido e está sendo utilizado aqui
+        // Supondo que FlowGraph já tenha sido definido e está sendo utilizado aqui
     FlowGraph* graph = new FlowGraph(file_path, true, true);
+
+    // Captura o tempo antes de calcular o fluxo máximo
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Calcula o fluxo máximo
     int maxFlow = graph->calculateMaxFlow(source, target);
+
+    // Captura o tempo após calcular o fluxo máximo
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // Calcula a duração do cálculo
+    std::chrono::duration<double> duration = end - start;
+
+    // Imprime o tempo de execução
     std::cout << "Fluxo máximo no grafo é: " << maxFlow << std::endl;
+    std::cout << "Tempo de execução do cálculo de fluxo máximo: " 
+              << duration.count() << " segundos." << std::endl;
+
+    // Registra o resultado no arquivo de log
     log_file << "Fluxo máximo no grafo é: " << maxFlow << std::endl;
+    log_file << "Tempo de execução do cálculo de fluxo máximo: " 
+             << duration.count() << " segundos." << std::endl;
+
+    // Fecha o arquivo de log
     log_file.close();
 }
 
 int main(){
-
-    testCaseCalculateMaxFlow(1,2);
+    //std::cout << "starting tests" << std::endl;
+    for (int i = 1; i <= 6; i++) {
+    testCaseCalculateMaxFlow(1,2, i);
+    }
     return 0;
 }
 

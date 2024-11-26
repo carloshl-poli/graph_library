@@ -160,10 +160,10 @@ std::stack<FlowGraph::ResidualEdge> FlowGraph::findAugmentingPath(
     if (targetFound) {
         
         int currentOrigin = target;
-
+        bottleneck = std::numeric_limits<int>::max();
         while (currentOrigin != source) {
             path.push(edgeTree[currentOrigin]);
-
+            //std::cout << "Capacidade da aresta:" << path.top().origin << " " << path.top().destiny << " é: " << path.top().capacity << std::endl;
             if (bottleneck > path.top().capacity) {
                 bottleneck = path.top().capacity;
             }
